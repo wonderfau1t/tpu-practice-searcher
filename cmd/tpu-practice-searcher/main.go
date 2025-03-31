@@ -11,7 +11,7 @@ func main() {
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, map[string]string{
-			"message": "Hello World!!!",
+			"message": "New Message!",
 		})
 	})
 
