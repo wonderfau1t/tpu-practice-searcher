@@ -1,0 +1,7 @@
+services:
+  backend:
+    image: tpu-practice-searcher:latest
+    container_name: tpu-practice-searcher-container
+    ports:
+      - "80:8000"
+    command: "./tpu-practice-searcher"
