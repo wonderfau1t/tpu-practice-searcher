@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tpu-practice-searcher:latest
+    container_name: tpu-practice-searcher-container
+    ports:
+      - "80:8000"
+    depends_on:
+      - db
+    command: "./tpu-practice-searcher"
+
+  db:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=db
+      - POSTGRES_PASSWORD=${DB_PASSWORD} # Используем переменную окружения
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

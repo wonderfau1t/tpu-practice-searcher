@@ -11,8 +11,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o tpu-practice-searcher ./cmd/tpu-practic
 FROM alpine:latest
 
 WORKDIR /app/
-
+COPY --from=builder /app/config ./config
 COPY --from=builder /app/tpu-practice-searcher .
+
+ENV CONFIG_PATH=./config/config.yaml
 CMD ["./tpu-practice-searcher"]
 
 
