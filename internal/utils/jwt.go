@@ -9,7 +9,7 @@ import (
 
 const AccessTokenTTL = time.Minute * 50
 
-var AccessTokenSecret = os.Getenv("JWT_SECRET_TOKEN")
+var AccessTokenSecret = []byte(os.Getenv("JWT_SECRET_TOKEN"))
 
 type Claims struct {
 	Username string `json:"username"`
