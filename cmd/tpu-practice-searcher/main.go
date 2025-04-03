@@ -29,7 +29,7 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
-	router.Use(middlewares.AuthMiddleware)
+	//router.Use(middlewares.AuthMiddleware)
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -42,8 +42,12 @@ func main() {
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, map[string]string{"message": "Hello world!"})
 	})
-	router.Get("/auth", handlers.Auth(log, db))
-	router.Get("/register", handlers.RegisterStudent(log, db))
+
+	router.Group(func(r chi.Router) {
+		r.Use(middlewares.AuthMiddleware)
+		router.Get("/auth", handlers.Auth(log, db))
+		router.Get("/register", handlers.RegisterStudent(log, db))
+	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)
 }

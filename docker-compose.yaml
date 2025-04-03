@@ -11,8 +11,8 @@ services:
       TELEGRAM_BOT_TOKEN: "TELEGRAM_BOT_TOKEN"
     ports:
       - "8000:8000"
-#    depends_on:
-#      - db
+    depends_on:
+      - db
     command: "./tpu-practice-searcher"
 
   db:
