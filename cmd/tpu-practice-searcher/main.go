@@ -45,8 +45,8 @@ func main() {
 
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
-		router.Get("/auth", handlers.Auth(log, db))
-		router.Get("/register", handlers.RegisterStudent(log, db))
+		r.Get("/auth", handlers.Auth(log, db))
+		r.Get("/register", handlers.RegisterStudent(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)
