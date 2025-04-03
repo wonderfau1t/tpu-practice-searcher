@@ -40,7 +40,7 @@ func MustLoad() *Config {
 
 	refreshSecret := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if refreshSecret == "" {
-		log.Fatalf("env variable REFRESH_SECRET is not set")
+		log.Fatalf("env variable TELEGRAM_BOT_TOKEN is not set")
 	}
 
 	if _, err := os.Stat(configPath); err != nil {

@@ -1,27 +1,53 @@
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: tpu-practice-searcher:latest
-    container_name: tpu-practice-searcher-container
-    ports:
-      - "80:8000"
-    depends_on:
-      - db
-    command: "./tpu-practice-searcher"
-
   db:
     image: postgres:latest
     container_name: postgres-container
     environment:
       - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=db
-      - POSTGRES_PASSWORD=${DB_PASSWORD} # Используем переменную окружения
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
+    restart: always
 
-volumes:
-  postgres_data:
+  backend:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tpu-practice-searcher:latest
+    container_name: tpu-practice-searcher-container
+    environment:
+      JWT_SECRET_TOKEN: "JWT_SECRET_TOKEN"
+      TELEGRAM_BOT_TOKEN: "TELEGRAM_BOT_TOKEN"
+    expose:
+      - "8000"
+    depends_on:
+      - db
+    command: "./tpu-practice-searcher"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - backend
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot-container
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    command: certonly --webroot --webroot-path=/var/www/certbot --email wonderrfau1t@gmail.com --agree-tos --no-eff-email -d tpupractice.ru
