@@ -49,7 +49,7 @@ func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 			return
 		}
 
-		accessToken, err := utils.GenerateAccessToken(user.Username, user.Role.Name)
+		accessToken, err := utils.GenerateAccessToken(user.ID, user.Username, user.Role.Name)
 		if err != nil {
 			log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
 			render.Status(r, http.StatusInternalServerError)

@@ -26,6 +26,11 @@ func CtxInitData(ctx context.Context) (initdata.InitData, bool) {
 	return initData, ok
 }
 
+func CtxClaims(ctx context.Context) (*utils.Claims, bool) {
+	claims, ok := ctx.Value("claims").(*utils.Claims)
+	return claims, ok
+}
+
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := os.Getenv("TELEGRAM_BOT_TOKEN")

@@ -51,7 +51,7 @@ func main() {
 		r.Get("/courses", handlers.GetAllCourses(log, db))
 	})
 
-	router.Post("/addVacancy", handlers.AddVacancy(log, db))
+	//router.Post("/addVacancy", handlers.AddVacancy(log, db))
 	//router.Post("/registerCompany", handlers.RegisterCompany(log, db))
 
 	router.Group(func(r chi.Router) {
@@ -59,6 +59,7 @@ func main() {
 		r.Get("/auth", handlers.Auth(log, db))
 		r.Get("/register", handlers.RegisterStudent(log, db))
 		r.Post("/registerCompany", handlers.RegisterCompany(log, db))
+		r.Post("/addVacancy", handlers.AddVacancy(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)

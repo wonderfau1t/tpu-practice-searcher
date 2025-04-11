@@ -12,13 +12,15 @@ const AccessTokenTTL = time.Minute * 50
 var AccessTokenSecret = []byte(os.Getenv("JWT_SECRET_TOKEN"))
 
 type Claims struct {
+	UserID   int64  `json:"userID"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
 
-func GenerateAccessToken(username string, role string) (string, error) {
+func GenerateAccessToken(userID int64, username string, role string) (string, error) {
 	claims := Claims{
+		UserID:   userID,
 		Username: username,
 		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{

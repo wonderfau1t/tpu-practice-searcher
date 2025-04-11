@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/storage/models"
 	"tpu-practice-searcher/internal/utils"
 	"tpu-practice-searcher/internal/utils/constants"
@@ -43,12 +44,20 @@ type AddVacancyResult struct {
 
 type AddVacancyController interface {
 	CreateNewVacancy(vacancy *models.Vacancy) error
+	GetCompanyByHrID(hrID int64) (*models.HrManager, error)
 }
 
 func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "handlers.AddVacancy"
 		log := log.With(slog.String("fn", fn))
+
+		claims, ok := middlewares.CtxClaims(r.Context())
+		if !ok {
+			render.Status(r, http.StatusUnauthorized)
+			render.JSON(w, r, utils.NewErrorResponse("Failed to parse claims"))
+			return
+		}
 
 		var req AddVacancyRequest
 		if err := render.DecodeJSON(r.Body, &req); err != nil {
@@ -59,23 +68,12 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 		}
 
 		validate := validator.New()
-		//if err := validate.Struct(req); err != nil {
-		//	render.Status(r, http.StatusBadRequest)
-		//	render.JSON(w, r, utils.NewErrorResponse("Required fields must not be empty"))
-		//	return
-		//}
-
 		if err := validate.Struct(req); err != nil {
 			var errors []string
 			for _, err := range err.(validator.ValidationErrors) {
-				// Формируем читаемое сообщение об ошибке
 				switch err.Tag() {
 				case "required":
 					errors = append(errors, err.Field()+" is required")
-				case "gt":
-					errors = append(errors, err.Field()+" must be greater than "+err.Param())
-				case "oneof":
-					errors = append(errors, err.Field()+" must be one of "+err.Param())
 				default:
 					errors = append(errors, err.Field()+" is invalid")
 				}
@@ -85,11 +83,18 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			return
 		}
 
+		company, err := db.GetCompanyByHrID(claims.UserID)
+		if err != nil {
+			log.Error(err.Error())
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+			return
+		}
+
 		vacancy := models.Vacancy{
-			Name: req.Name,
-			// Откуда брать ID компании
-			CompanyID:                      0,
-			HrID:                           0,
+			Name:                           req.Name,
+			CompanyID:                      company.CompanyID,
+			HrID:                           claims.UserID,
 			StatusID:                       constants.StatusDefault,
 			FormatID:                       req.FormatID,
 			CategoryID:                     req.CategoryID,

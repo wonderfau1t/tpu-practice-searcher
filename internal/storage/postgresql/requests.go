@@ -176,3 +176,13 @@ func (s *Storage) CreateNewVacancy(vacancy *models.Vacancy) error {
 	}
 	return nil
 }
+
+func (s *Storage) GetCompanyByHrID(hrID int64) (*models.HrManager, error) {
+	const fn = "storage.postgresql.GetCompanyByHrID"
+
+	var company models.HrManager
+	if err := s.db.First(&company, "user_id = ?", hrID).Error; err != nil {
+		return nil, err
+	}
+	return &company, nil
+}
