@@ -43,10 +43,23 @@ func main() {
 		render.JSON(w, r, map[string]string{"message": "Hello world!"})
 	})
 
+	router.Route("/search", func(r chi.Router) {
+		r.Get("/categories", handlers.GetAllCategories(log, db))
+		r.Get("/formats", handlers.GetAllFormats(log, db))
+		r.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
+		r.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
+		r.Get("/courses", handlers.GetAllCourses(log, db))
+
+	})
+
+	router.Post("/addVacancy", handlers.AddVacancy(log, db))
+	//router.Post("/registerCompany", handlers.RegisterCompany(log, db))
+
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
 		r.Get("/auth", handlers.Auth(log, db))
 		r.Get("/register", handlers.RegisterStudent(log, db))
+		r.Post("/registerCompany", handlers.RegisterCompany(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)

@@ -24,7 +24,7 @@ type AuthResult struct {
 func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "handlers.Auth"
-		log = log.With(slog.String("fn", fn))
+		log := log.With(slog.String("fn", fn))
 
 		initData, ok := middlewares.CtxInitData(r.Context())
 		if !ok {
@@ -58,7 +58,7 @@ func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 			return
 		}
 
-		result := AuthResult{AccessToken: accessToken, Role: "student"}
+		result := AuthResult{AccessToken: accessToken, Role: user.Role.Name}
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, utils.NewSuccessResponse(result))
 	}

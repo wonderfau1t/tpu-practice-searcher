@@ -23,7 +23,7 @@ func RegisterStudent(log *slog.Logger, db RegisterStudentController) http.Handle
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "handlers.RegisterStudent"
 
-		log = log.With(slog.String("fn", fn))
+		log := log.With(slog.String("fn", fn))
 
 		initData, ok := middlewares.CtxInitData(r.Context())
 		if !ok {
