@@ -45,9 +45,9 @@ type School struct {
 
 // Направления
 type Course struct {
-	ID       uint `gorm:"primaryKey"`
-	Name     string
-	SchoolID uint
+	ID       uint   `gorm:"primaryKey" json:"id"`
+	Name     string `json:"name"`
+	SchoolID uint   `json:"-"`
 
 	School    School    `json:"-"`
 	Vacancies []Vacancy `gorm:"many2many:vacancy_courses" json:"-"`
@@ -88,28 +88,28 @@ type HrManager struct {
 
 // Формат проведения вакансии
 type Format struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"unique"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `gorm:"unique" json:"name"`
 
 	Vacancies []Vacancy `gorm:"foreignKey:FormatID" json:"-"`
 }
 
 // Категории (IT, нефтегаз и тд)
 type Category struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"unique"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `gorm:"unique" json:"name"`
 
 	Vacancies []Vacancy `gorm:"foreignKey:CategoryID" json:"-"`
 }
 
 type PaymentForAccommodation struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"unique"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `gorm:"unique" json:"name"`
 }
 
 type FarePayment struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"unique"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `gorm:"unique" json:"name"`
 }
 
 // Вакансия

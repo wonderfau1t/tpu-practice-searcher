@@ -49,7 +49,6 @@ func main() {
 		r.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
 		r.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
 		r.Get("/courses", handlers.GetAllCourses(log, db))
-
 	})
 
 	router.Post("/addVacancy", handlers.AddVacancy(log, db))

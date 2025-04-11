@@ -13,7 +13,7 @@ func (s *Storage) GetUserByID(userID int64) (*models.User, error) {
 	const fn = "storage.postgresql.GetUserByID"
 
 	var user models.User
-	err := s.db.First(&user, userID).Error
+	err := s.db.Preload("Role").First(&user, userID).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound

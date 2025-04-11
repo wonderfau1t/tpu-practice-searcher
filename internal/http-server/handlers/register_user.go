@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/utils"
+	"tpu-practice-searcher/internal/utils/constants"
 )
 
 type RegisterStudentController interface {
@@ -29,7 +30,6 @@ func RegisterStudent(log *slog.Logger, db RegisterStudentController) http.Handle
 		if !ok {
 			render.Status(r, http.StatusUnauthorized)
 			render.JSON(w, r, utils.NewErrorResponse("Init data not found"))
-
 			return
 		}
 
@@ -38,24 +38,21 @@ func RegisterStudent(log *slog.Logger, db RegisterStudentController) http.Handle
 			log.Error(fmt.Sprintf("Failed to check existence of user: %s", err.Error()))
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
-
 			return
 		}
 
 		if exists {
 			render.Status(r, http.StatusConflict)
 			render.JSON(w, r, utils.NewErrorResponse("User already exists"))
-
 			return
 		}
 
 		// FIX: Уйти от хардкодинга роли
-		err = db.CreateNewUser(initData.User.ID, initData.User.Username, 4)
+		err = db.CreateNewUser(initData.User.ID, initData.User.Username, constants.RoleStudent)
 		if err != nil {
 			log.Error(fmt.Sprintf("Failed to register new unser: %s", err.Error()))
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
-
 			return
 		}
 
@@ -65,12 +62,10 @@ func RegisterStudent(log *slog.Logger, db RegisterStudentController) http.Handle
 			log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
-
 			return
 		}
 
 		result := RegisterResult{AccessToken: accessToken, Role: "student"}
-
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, utils.NewSuccessResponse(result))
 	}
