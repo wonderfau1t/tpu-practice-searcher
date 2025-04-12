@@ -9,6 +9,7 @@ import (
 	"os"
 	"tpu-practice-searcher/internal/config"
 	"tpu-practice-searcher/internal/http-server/handlers"
+	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
@@ -63,7 +64,7 @@ func main() {
 		r.Post("/registerCompany", handlers.RegisterCompany(log, db))
 		r.Post("/addVacancy", handlers.AddVacancy(log, db))
 		r.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
-		//r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
+		r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)

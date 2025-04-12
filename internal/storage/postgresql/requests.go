@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
 	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils/constants"
 )
@@ -218,4 +219,27 @@ func (s *Storage) GetCompanyIDByHRID(hrID int64) (uint, error) {
 		return 0, err
 	}
 	return companyHr.CompanyID, nil
+}
+
+func (s *Storage) GetAllHrsOfCompany(companyID uint) ([]get_all_hrs_of_company.HRDTO, error) {
+	var response []get_all_hrs_of_company.HRDTO
+	var hrs []db_models.HrManager
+	if err := s.db.Preload("User").Where("company_id = ?", companyID).Find(&hrs).Error; err != nil {
+		return nil, err
+	}
+
+	for _, hr := range hrs {
+		var vacancyCount int64
+		if err := s.db.Model(&db_models.Vacancy{}).Where("hr_id = ?", hr.UserID).Count(&vacancyCount).Error; err != nil {
+			return nil, err
+		}
+
+		response = append(response, get_all_hrs_of_company.HRDTO{
+			Id:               hr.UserID,
+			Username:         hr.User.Username,
+			CountOfVacancies: int(vacancyCount),
+		})
+	}
+
+	return response, nil
 }
