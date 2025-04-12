@@ -145,7 +145,7 @@ type VacancyDescription struct {
 	VacancyID      uint `gorm:"primaryKey"`
 	Workplace      sql.NullString
 	Position       sql.NullString
-	Salary         sql.NullInt64
+	Salary         sql.NullString
 	Requirements   sql.NullString
 	Food           sql.NullString
 	Conditions     sql.NullString

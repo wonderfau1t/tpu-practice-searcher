@@ -60,6 +60,7 @@ func main() {
 		r.Get("/register", handlers.RegisterStudent(log, db))
 		r.Post("/registerCompany", handlers.RegisterCompany(log, db))
 		r.Post("/addVacancy", handlers.AddVacancy(log, db))
+		//r.Get("/vacancies/", handlers.GetAllVacancies)
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)

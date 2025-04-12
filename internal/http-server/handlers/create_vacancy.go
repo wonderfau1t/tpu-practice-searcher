@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"log/slog"
@@ -16,7 +15,7 @@ import (
 type VacancyDescription struct {
 	Workplace      string `json:"workplace"`
 	Position       string `json:"position"`
-	Salary         int64  `json:"salary"`
+	Salary         string `json:"salary"`
 	Requirements   string `json:"requirements"`
 	Food           string `json:"food"`
 	Conditions     string `json:"conditions"`
@@ -104,12 +103,9 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			FarePaymentID:                  req.FarePaymentID,
 			FarePaymentDetails:             utils.ToNullString(req.FarePaymentDetails),
 			Description: models.VacancyDescription{
-				Workplace: utils.ToNullString(req.Description.Workplace),
-				Position:  utils.ToNullString(req.Description.Position),
-				Salary: sql.NullInt64{
-					Int64: req.Description.Salary,
-					Valid: true,
-				},
+				Workplace:      utils.ToNullString(req.Description.Workplace),
+				Position:       utils.ToNullString(req.Description.Position),
+				Salary:         utils.ToNullString(req.Description.Salary),
 				Requirements:   utils.ToNullString(req.Description.Requirements),
 				Food:           utils.ToNullString(req.Description.Food),
 				Conditions:     utils.ToNullString(req.Description.Conditions),
