@@ -40,5 +40,6 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 		}
 
 		render.Status(r, http.StatusCreated)
+		render.JSON(w, r, utils.NewSuccessResponse("replied!"))
 	}
 }
