@@ -132,6 +132,7 @@ type Vacancy struct {
 	FarePaymentID                  uint
 	FarePaymentDetails             sql.NullString
 
+	Replies                 []Reply                 `gorm:"foreignKey:VacancyID"`
 	Company                 Company                 `gorm:"foreignKey:CompanyID"`
 	Hr                      User                    `gorm:"foreignKey:HrID"`
 	Status                  Status                  `gorm:"foreignKey:StatusID"`
@@ -156,4 +157,11 @@ type VacancyDescription struct {
 type VacancyKeywords struct {
 	VacancyID uint   `gorm:"primaryKey"`
 	Keyword   string `gorm:"primaryKey"`
+}
+
+type Reply struct {
+	VacancyID uint  `gorm:"primaryKey"`
+	StudentID int64 `gorm:"primaryKey"`
+
+	Vacancy Vacancy `gorm:"foreignKey:VacancyID"`
 }

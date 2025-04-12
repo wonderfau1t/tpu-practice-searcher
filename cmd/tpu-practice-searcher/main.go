@@ -14,6 +14,9 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/get_company_details"
 	"tpu-practice-searcher/internal/http-server/handlers/get_vacancy_details"
+	"tpu-practice-searcher/internal/http-server/handlers/student/get_replies"
+	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies"
+	"tpu-practice-searcher/internal/http-server/handlers/student/reply_to_vacancy"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -35,7 +38,6 @@ func main() {
 
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
-	//router.Use(middlewares.AuthMiddleware)
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -49,6 +51,7 @@ func main() {
 		render.JSON(w, r, map[string]string{"message": "Hello world!"})
 	})
 
+	// Справочная информация
 	router.Route("/search", func(r chi.Router) {
 		r.Get("/categories", handlers.GetAllCategories(log, db))
 		r.Get("/formats", handlers.GetAllFormats(log, db))
@@ -57,9 +60,10 @@ func main() {
 		r.Get("/courses", handlers.GetAllCourses(log, db))
 	})
 
+	// Вакансии
+	router.Get("/vacancies", get_vacancies.New(log, db))
+	// Подробная информация о вакансии
 	router.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
-	//router.Post("/addVacancy", handlers.AddVacancy(log, db))
-	//router.Post("/registerCompany", handlers.RegisterCompany(log, db))
 
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
@@ -72,6 +76,8 @@ func main() {
 		r.Post("/company/createHr", create_new_hr.New(log, db))
 		r.Get("/company/info", get_company_details.New(log, db))
 
+		r.Post("/reply", reply_to_vacancy.New(log, db))
+		r.Get("/replies", get_replies.New(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)

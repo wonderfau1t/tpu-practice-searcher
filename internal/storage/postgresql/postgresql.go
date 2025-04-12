@@ -23,7 +23,10 @@ func SetupStorage(storageConf config.Storage) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	err = db.AutoMigrate(&db_models.Role{}, &db_models.User{}, &db_models.Status{}, &db_models.Company{}, &db_models.School{}, &db_models.Course{}, &db_models.Moderator{}, &db_models.HrManager{}, &db_models.Format{}, &db_models.Category{}, &db_models.PaymentForAccommodation{}, &db_models.FarePayment{}, &db_models.Vacancy{}, &db_models.VacancyDescription{}, &db_models.VacancyKeywords{})
+	err = db.AutoMigrate(&db_models.Role{}, &db_models.User{}, &db_models.Status{}, &db_models.Company{},
+		&db_models.School{}, &db_models.Course{}, &db_models.Moderator{}, &db_models.HrManager{}, &db_models.Format{},
+		&db_models.Category{}, &db_models.PaymentForAccommodation{}, &db_models.FarePayment{}, &db_models.Vacancy{},
+		&db_models.VacancyDescription{}, &db_models.VacancyKeywords{}, &db_models.Reply{})
 	if err != nil {
 		log.Fatalf("failed to apply migrations")
 	}

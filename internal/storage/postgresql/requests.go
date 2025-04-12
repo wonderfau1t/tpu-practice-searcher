@@ -285,3 +285,36 @@ func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
 	}
 	return &vacancy, nil
 }
+
+func (s *Storage) GetAllVacancies() ([]db_models.Vacancy, error) {
+	var vacancies []db_models.Vacancy
+	if err := s.db.Debug().Preload("Company").Preload("Category").Preload("Courses").Find(&vacancies).Error; err != nil {
+		return nil, err
+	}
+	return vacancies, nil
+}
+
+func (s *Storage) AddReply(studentID int64, vacancyID uint) error {
+	reply := db_models.Reply{
+		VacancyID: vacancyID,
+		StudentID: studentID,
+	}
+	if err := s.db.Create(&reply).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Storage) GetRepliedVacancies(studentID int64) ([]db_models.Vacancy, error) {
+	var vacancies []db_models.Vacancy
+
+	var replies []db_models.Reply
+	if err := s.db.Preload("Vacancy.Category").Preload("Vacancy.Company").Find(&replies, "student_id = ?", studentID).Error; err != nil {
+		return nil, err
+	}
+
+	for _, reply := range replies {
+		vacancies = append(vacancies, reply.Vacancy)
+	}
+	return vacancies, nil
+}
