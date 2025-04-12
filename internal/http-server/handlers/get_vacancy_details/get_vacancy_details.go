@@ -14,6 +14,8 @@ type VacancyDTO struct {
 	// FIX: Информация о компании нужна еще
 	Id                      uint           `json:"id"`
 	Name                    string         `json:"name"`
+	CompanyID               uint           `json:"companyID"`
+	CompanyName             string         `json:"companyName"`
 	Format                  string         `json:"format"`
 	Category                string         `json:"category"`
 	Courses                 []string       `json:"courses"`
@@ -69,6 +71,8 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 		dto := VacancyDTO{
 			Id:                      vacancy.ID,
 			Name:                    vacancy.Name,
+			CompanyID:               vacancy.CompanyID,
+			CompanyName:             vacancy.Company.Name,
 			Format:                  vacancy.Format.Name,
 			Category:                vacancy.Category.Name,
 			DeadlineAt:              vacancy.DeadlineAt,
