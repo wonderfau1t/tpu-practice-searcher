@@ -125,7 +125,7 @@ type Vacancy struct {
 	Description                    VacancyDescription `gorm:"foreignKey:VacancyID"`
 	Keywords                       []VacancyKeywords  `gorm:"foreignKey:VacancyID"`
 	NumberOfResponses              int                `gorm:"default:0"`
-	DeadlineAt                     time.Time
+	DeadlineAt                     string
 	PaymentForAccommodationID      uint
 	PaymentForAccommodationDetails sql.NullString
 	FarePaymentID                  uint

@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"time"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/storage/models"
 	"tpu-practice-searcher/internal/utils"
@@ -30,7 +29,7 @@ type AddVacancyRequest struct {
 	CategoryID                     uint               `json:"categoryID" validate:"required"`
 	Courses                        []uint             `json:"courses" validate:"required"`
 	Keywords                       []string           `json:"keywords"`
-	DeadlineAt                     time.Time          `json:"deadlineAt" validate:"required"`
+	DeadlineAt                     string             `json:"deadlineAt" validate:"required"`
 	PaymentForAccommodationID      uint               `json:"paymentForAccommodationID" validate:"required"`
 	PaymentForAccommodationDetails string             `json:"paymentForAccommodationDetails"`
 	FarePaymentID                  uint               `json:"farePaymentID" validate:"required"`
