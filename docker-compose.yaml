@@ -19,8 +19,8 @@ services:
     image: postgres:latest
     container_name: postgres-container
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=notdefaultuser
+      - POSTGRES_PASSWORD=notdefaultuserpassword
       - POSTGRES_DB=db
     ports:
       - "5432:5432"
