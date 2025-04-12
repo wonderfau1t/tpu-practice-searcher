@@ -49,7 +49,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		switch authType {
 		case "tma":
-			if err := initdata.Validate(authData, token, time.Hour*24); err != nil {
+			if err := initdata.Validate(authData, token, time.Hour*72); err != nil {
 				render.Status(r, http.StatusUnauthorized)
 				render.JSON(w, r, utils.NewErrorResponse("Unauthorized"))
 

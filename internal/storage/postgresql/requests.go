@@ -206,7 +206,7 @@ func (s *Storage) GetAllVacanciesOfCompany(companyID uint) ([]db_models.Vacancy,
 	//const fn = "storage.postg"
 
 	var vacancies []db_models.Vacancy
-	if err := s.db.Debug().Preload("Courses").Preload("Category").Where("company_id = ?", companyID).Find(&vacancies).Error; err != nil {
+	if err := s.db.Debug().Preload("Company").Preload("Courses").Preload("Category").Where("company_id = ?", companyID).Find(&vacancies).Error; err != nil {
 		return nil, err
 	}
 	return vacancies, nil

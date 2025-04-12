@@ -16,6 +16,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/get_vacancy_details"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_replies"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies"
+	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/student/reply_to_vacancy"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
@@ -64,6 +65,7 @@ func main() {
 	router.Get("/vacancies", get_vacancies.New(log, db))
 	// Подробная информация о вакансии
 	router.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
+	router.Get("/companies/{id}/vacancies", get_vacancies_of_company.New(log, db))
 
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
