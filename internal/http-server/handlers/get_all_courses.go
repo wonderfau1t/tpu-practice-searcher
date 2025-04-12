@@ -4,16 +4,16 @@ import (
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
-	"tpu-practice-searcher/internal/storage/models"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 )
 
 type GetAllCoursesController interface {
-	GetAllCourses() ([]models.Course, error)
+	GetAllCourses() ([]db_models.Course, error)
 }
 
 type GetAllCoursesResult struct {
-	Courses []models.Course `json:"courses"`
+	Courses []db_models.Course `json:"courses"`
 }
 
 func GetAllCourses(log *slog.Logger, db GetAllCoursesController) http.HandlerFunc {

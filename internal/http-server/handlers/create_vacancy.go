@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"tpu-practice-searcher/internal/http-server/middlewares"
-	"tpu-practice-searcher/internal/storage/models"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 	"tpu-practice-searcher/internal/utils/constants"
 )
@@ -41,8 +41,8 @@ type AddVacancyResult struct {
 }
 
 type AddVacancyController interface {
-	CreateNewVacancy(vacancy *models.Vacancy) error
-	GetCompanyByHrID(hrID int64) (*models.HrManager, error)
+	CreateNewVacancy(vacancy *db_models.Vacancy) error
+	GetCompanyByHrID(hrID int64) (*db_models.HrManager, error)
 }
 
 func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
@@ -89,7 +89,7 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			return
 		}
 
-		vacancy := models.Vacancy{
+		vacancy := db_models.Vacancy{
 			Name:                           req.Name,
 			CompanyID:                      company.CompanyID,
 			HrID:                           claims.UserID,
@@ -102,7 +102,7 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			PaymentForAccommodationDetails: utils.ToNullString(req.PaymentForAccommodationDetails),
 			FarePaymentID:                  req.FarePaymentID,
 			FarePaymentDetails:             utils.ToNullString(req.FarePaymentDetails),
-			Description: models.VacancyDescription{
+			Description: db_models.VacancyDescription{
 				Workplace:      utils.ToNullString(req.Description.Workplace),
 				Position:       utils.ToNullString(req.Description.Position),
 				Salary:         utils.ToNullString(req.Description.Salary),
@@ -114,10 +114,10 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 		}
 
 		for _, keyword := range req.Keywords {
-			vacancy.Keywords = append(vacancy.Keywords, models.VacancyKeywords{Keyword: keyword})
+			vacancy.Keywords = append(vacancy.Keywords, db_models.VacancyKeywords{Keyword: keyword})
 		}
 		for _, courseID := range req.Courses {
-			vacancy.Courses = append(vacancy.Courses, models.Course{ID: courseID})
+			vacancy.Courses = append(vacancy.Courses, db_models.Course{ID: courseID})
 		}
 
 		if err := db.CreateNewVacancy(&vacancy); err != nil {

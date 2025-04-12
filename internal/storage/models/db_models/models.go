@@ -1,4 +1,4 @@
-package models
+package db_models
 
 import (
 	"database/sql"
@@ -72,9 +72,10 @@ type Company struct {
 	HeadHrID     int64
 	AcceptedByID *int64
 
-	Status     Status `gorm:"foreignKey:StatusID"`
-	HeadHr     User   `gorm:"foreignKey:HeadHrID"`
-	AcceptedBy User   `gorm:"foreignKey:AcceptedByID"`
+	Vacancies  []Vacancy `gorm:"foreignKey:CompanyID"`
+	Status     Status    `gorm:"foreignKey:StatusID"`
+	HeadHr     User      `gorm:"foreignKey:HeadHrID"`
+	AcceptedBy User      `gorm:"foreignKey:AcceptedByID"`
 }
 
 // HR каждой компании

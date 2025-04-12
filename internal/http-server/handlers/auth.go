@@ -8,12 +8,14 @@ import (
 	"log/slog"
 	"net/http"
 	"tpu-practice-searcher/internal/http-server/middlewares"
-	"tpu-practice-searcher/internal/storage/models"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
+	"tpu-practice-searcher/internal/utils/constants"
 )
 
 type AuthController interface {
-	GetUserByID(userID int64) (*models.User, error)
+	GetUserByID(userID int64) (*db_models.User, error)
+	GetCompanyIDByHRID(hrID int64) (uint, error)
 }
 
 type AuthResult struct {
@@ -48,14 +50,35 @@ func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 
 			return
 		}
+		print(user.RoleID)
+		var accessToken string
+		if user.RoleID == constants.RoleStudent {
+			accessToken, err = utils.GenerateStudentAccessToken(user.ID, user.Username, user.Role.Name)
+			if err != nil {
+				log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
 
-		accessToken, err := utils.GenerateAccessToken(user.ID, user.Username, user.Role.Name)
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+				return
+			}
+		}
 
-			return
+		if user.RoleID == constants.RoleHR || user.RoleID == constants.RoleHeadHR {
+			companyID, err := db.GetCompanyIDByHRID(user.ID)
+			if err != nil {
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+				return
+			}
+
+			accessToken, err = utils.GenerateHrAccessToken(user.ID, user.Username, companyID, user.Role.Name)
+			if err != nil {
+				log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+
+				return
+			}
 		}
 
 		result := AuthResult{AccessToken: accessToken, Role: user.Role.Name}

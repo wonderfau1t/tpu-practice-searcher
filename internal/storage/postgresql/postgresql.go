@@ -7,7 +7,7 @@ import (
 	"log"
 	"tpu-practice-searcher/config/initial_data"
 	"tpu-practice-searcher/internal/config"
-	"tpu-practice-searcher/internal/storage/models"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 )
 
 type Storage struct {
@@ -17,13 +17,13 @@ type Storage struct {
 func SetupStorage(storageConf config.Storage) (*Storage, error) {
 	const fn = "storage.postrgresql.SetupStorage"
 
-	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=%d", storageConf.User, storageConf.Password, storageConf.Dbname, storageConf.Port)
+	dsn := fmt.Sprintf("host=0.0.0.0 user=%s password=%s dbname=%s port=%d", storageConf.User, storageConf.Password, storageConf.Dbname, storageConf.Port)
 	db, err := gorm.Open(postgres.Open(dsn))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	err = db.AutoMigrate(&models.Role{}, &models.User{}, &models.Status{}, &models.Company{}, &models.School{}, &models.Course{}, &models.Moderator{}, &models.HrManager{}, &models.Format{}, &models.Category{}, &models.PaymentForAccommodation{}, &models.FarePayment{}, &models.Vacancy{}, &models.VacancyDescription{}, &models.VacancyKeywords{})
+	err = db.AutoMigrate(&db_models.Role{}, &db_models.User{}, &db_models.Status{}, &db_models.Company{}, &db_models.School{}, &db_models.Course{}, &db_models.Moderator{}, &db_models.HrManager{}, &db_models.Format{}, &db_models.Category{}, &db_models.PaymentForAccommodation{}, &db_models.FarePayment{}, &db_models.Vacancy{}, &db_models.VacancyDescription{}, &db_models.VacancyKeywords{})
 	if err != nil {
 		log.Fatalf("failed to apply migrations")
 	}

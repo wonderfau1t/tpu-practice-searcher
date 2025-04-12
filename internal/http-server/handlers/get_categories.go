@@ -4,16 +4,16 @@ import (
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
-	"tpu-practice-searcher/internal/storage/models"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 )
 
 type GetAllCategoriesController interface {
-	GetAllCategories() ([]models.Category, error)
+	GetAllCategories() ([]db_models.Category, error)
 }
 
 type GetAllCategoriesResult struct {
-	Categories []models.Category `json:"categories"`
+	Categories []db_models.Category `json:"categories"`
 }
 
 func GetAllCategories(log *slog.Logger, db GetAllCategoriesController) http.HandlerFunc {

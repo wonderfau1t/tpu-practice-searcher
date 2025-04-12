@@ -57,7 +57,7 @@ func RegisterStudent(log *slog.Logger, db RegisterStudentController) http.Handle
 		}
 
 		// FIX: Уйти от хардкодинга роли
-		accessToken, err := utils.GenerateAccessToken(initData.User.ID, initData.User.Username, "student")
+		accessToken, err := utils.GenerateStudentAccessToken(initData.User.ID, initData.User.Username, "student")
 		if err != nil {
 			log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
 			render.Status(r, http.StatusInternalServerError)

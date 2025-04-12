@@ -4,16 +4,16 @@ import (
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
-	"tpu-practice-searcher/internal/storage/models"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 )
 
 type GetAllFarePaymentMethodController interface {
-	GetAllFarePaymentMethods() ([]models.FarePayment, error)
+	GetAllFarePaymentMethods() ([]db_models.FarePayment, error)
 }
 
 type GetAllFarePaymentMethodsResult struct {
-	PaymentMethods []models.FarePayment `json:"paymentMethods"`
+	PaymentMethods []db_models.FarePayment `json:"paymentMethods"`
 }
 
 func GetAllFarePaymentMethods(log *slog.Logger, db GetAllFarePaymentMethodController) http.HandlerFunc {

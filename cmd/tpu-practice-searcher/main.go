@@ -9,6 +9,7 @@ import (
 	"os"
 	"tpu-practice-searcher/internal/config"
 	"tpu-practice-searcher/internal/http-server/handlers"
+	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -29,6 +30,7 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 	//router.Use(middlewares.AuthMiddleware)
 
 	router.Use(cors.Handler(cors.Options{
@@ -60,7 +62,8 @@ func main() {
 		r.Get("/register", handlers.RegisterStudent(log, db))
 		r.Post("/registerCompany", handlers.RegisterCompany(log, db))
 		r.Post("/addVacancy", handlers.AddVacancy(log, db))
-		//r.Get("/vacancies/", handlers.GetAllVacancies)
+		r.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
+		//r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)

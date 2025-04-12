@@ -1,8 +1,10 @@
 package initial_data
 
-import "tpu-practice-searcher/internal/storage/models"
+import (
+	"tpu-practice-searcher/internal/storage/models/db_models"
+)
 
-var DefaultSchools = []models.School{
+var DefaultSchools = []db_models.School{
 	{
 		ID:        1,
 		Name:      "Бизнес-школа",
@@ -40,7 +42,7 @@ var DefaultSchools = []models.School{
 	},
 }
 
-var DefaultCourses = []models.Course{
+var DefaultCourses = []db_models.Course{
 	{
 		Name:     "Технологическое предпринимательство",
 		SchoolID: 1,
@@ -687,7 +689,7 @@ var DefaultCourses = []models.Course{
 	},
 }
 
-var DefaultRoles = []models.Role{
+var DefaultRoles = []db_models.Role{
 	{
 		ID:   1,
 		Name: "admin",
@@ -710,7 +712,7 @@ var DefaultRoles = []models.Role{
 	},
 }
 
-var DefaultStatuses = []models.Status{
+var DefaultStatuses = []db_models.Status{
 	{
 		ID:   1,
 		Name: "Under review",
@@ -733,7 +735,7 @@ var DefaultStatuses = []models.Status{
 	},
 }
 
-var DefaultFarePayments = []models.FarePayment{
+var DefaultFarePayments = []db_models.FarePayment{
 	{
 		ID:   1,
 		Name: "За счет компании",
@@ -748,7 +750,7 @@ var DefaultFarePayments = []models.FarePayment{
 	},
 }
 
-var DefaultPaymentForAccommodation = []models.PaymentForAccommodation{
+var DefaultPaymentForAccommodation = []db_models.PaymentForAccommodation{
 	{
 		ID:   1,
 		Name: "За счет компании",
@@ -763,7 +765,7 @@ var DefaultPaymentForAccommodation = []models.PaymentForAccommodation{
 	},
 }
 
-var DefaultFormats = []models.Format{
+var DefaultFormats = []db_models.Format{
 	{
 		ID:   1,
 		Name: "Очно",
@@ -778,7 +780,7 @@ var DefaultFormats = []models.Format{
 	},
 }
 
-var DefaultCategories = []models.Category{
+var DefaultCategories = []db_models.Category{
 	{
 		Name: "Автомобильный бизнес",
 	},

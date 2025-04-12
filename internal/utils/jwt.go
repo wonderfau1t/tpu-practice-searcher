@@ -12,17 +12,33 @@ const AccessTokenTTL = time.Minute * 50
 var AccessTokenSecret = []byte(os.Getenv("JWT_SECRET_TOKEN"))
 
 type Claims struct {
-	UserID   int64  `json:"userID"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
+	UserID    int64  `json:"userID"`
+	Username  string `json:"username"`
+	CompanyID uint   `json:"companyID,omitempty"`
+	Role      string `json:"role"`
 	jwt.RegisteredClaims
 }
 
-func GenerateAccessToken(userID int64, username string, role string) (string, error) {
+func GenerateStudentAccessToken(userID int64, username string, role string) (string, error) {
 	claims := Claims{
 		UserID:   userID,
 		Username: username,
 		Role:     role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(AccessTokenTTL)),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(AccessTokenSecret)
+}
+
+func GenerateHrAccessToken(userID int64, username string, companyID uint, role string) (string, error) {
+	claims := Claims{
+		UserID:    userID,
+		Username:  username,
+		CompanyID: companyID,
+		Role:      role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(AccessTokenTTL)),
 		},
