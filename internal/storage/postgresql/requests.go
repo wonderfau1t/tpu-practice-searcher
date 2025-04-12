@@ -243,3 +243,29 @@ func (s *Storage) GetAllHrsOfCompany(companyID uint) ([]get_all_hrs_of_company.H
 
 	return response, nil
 }
+
+func (s *Storage) CreateNewHr(username string, companyID uint) error {
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		user := db_models.User{
+			Username: username,
+			StatusID: constants.StatusUnderReview,
+			RoleID:   constants.RoleHR,
+		}
+		if err := tx.Create(&user).Error; err != nil {
+			return err
+		}
+
+		relation := db_models.HrManager{
+			UserID:    user.ID,
+			CompanyID: companyID,
+		}
+		if err := tx.Create(&relation).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
