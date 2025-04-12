@@ -36,6 +36,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 		if !ok {
 			render.Status(r, http.StatusUnauthorized)
 			render.JSON(w, r, utils.NewErrorResponse("Failed to parse claims"))
+			return
 		}
 
 		exists, err := db.IsCompanyExist(claims.CompanyID)

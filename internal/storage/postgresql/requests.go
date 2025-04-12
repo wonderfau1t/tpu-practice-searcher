@@ -269,3 +269,19 @@ func (s *Storage) CreateNewHr(username string, companyID uint) error {
 	}
 	return nil
 }
+
+func (s *Storage) GetCompanyInfo(companyID uint) (*db_models.Company, error) {
+	var company db_models.Company
+	if err := s.db.First(&company, companyID).Error; err != nil {
+		return nil, err
+	}
+	return &company, nil
+}
+
+func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
+	var vacancy db_models.Vacancy
+	if err := s.db.Debug().Preload("Format").Preload("Category").Preload("PaymentForAccommodation").Preload("FarePayment").Preload("Description").Preload("Courses").Preload("Keywords").First(&vacancy, vacancyID).Error; err != nil {
+		return nil, err
+	}
+	return &vacancy, nil
+}

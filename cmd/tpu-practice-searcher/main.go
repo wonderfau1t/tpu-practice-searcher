@@ -12,6 +12,8 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/create_new_hr"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
+	"tpu-practice-searcher/internal/http-server/handlers/get_company_details"
+	"tpu-practice-searcher/internal/http-server/handlers/get_vacancy_details"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -55,6 +57,7 @@ func main() {
 		r.Get("/courses", handlers.GetAllCourses(log, db))
 	})
 
+	router.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
 	//router.Post("/addVacancy", handlers.AddVacancy(log, db))
 	//router.Post("/registerCompany", handlers.RegisterCompany(log, db))
 
@@ -67,6 +70,8 @@ func main() {
 		r.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
 		r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
 		r.Post("/company/createHr", create_new_hr.New(log, db))
+		r.Get("/company/info", get_company_details.New(log, db))
+
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)
