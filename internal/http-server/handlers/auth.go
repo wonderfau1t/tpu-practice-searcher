@@ -50,9 +50,18 @@ func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 
 			return
 		}
-		print(user.RoleID)
 		var accessToken string
 		if user.RoleID == constants.RoleStudent {
+			accessToken, err = utils.GenerateStudentAccessToken(user.ID, user.Username, user.Role.Name)
+			if err != nil {
+				log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+
+				return
+			}
+		}
+		if user.RoleID == constants.RoleModerator {
 			accessToken, err = utils.GenerateStudentAccessToken(user.ID, user.Username, user.Role.Name)
 			if err != nil {
 				log.Error(fmt.Sprintf("failed to generate access token: %s", err.Error()))
