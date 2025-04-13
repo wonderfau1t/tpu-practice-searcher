@@ -164,4 +164,5 @@ type Reply struct {
 	StudentID int64 `gorm:"primaryKey"`
 
 	Vacancy Vacancy `gorm:"foreignKey:VacancyID"`
+	Student User    `gorm:"foreignKey:StudentID"`
 }

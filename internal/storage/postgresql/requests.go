@@ -280,7 +280,18 @@ func (s *Storage) GetCompanyInfo(companyID uint) (*db_models.Company, error) {
 
 func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
 	var vacancy db_models.Vacancy
-	if err := s.db.Debug().Preload("Company").Preload("Format").Preload("Category").Preload("PaymentForAccommodation").Preload("FarePayment").Preload("Description").Preload("Courses").Preload("Keywords").First(&vacancy, vacancyID).Error; err != nil {
+	if err := s.db.Debug().
+		Preload("Company").
+		Preload("Hr").
+		Preload("Format").
+		Preload("Category").
+		Preload("PaymentForAccommodation").
+		Preload("FarePayment").
+		Preload("Description").
+		Preload("Courses").
+		Preload("Keywords").
+		Preload("Replies").Preload("Replies.Student").
+		First(&vacancy, vacancyID).Error; err != nil {
 		return nil, err
 	}
 	return &vacancy, nil
@@ -317,4 +328,38 @@ func (s *Storage) GetRepliedVacancies(studentID int64) ([]db_models.Vacancy, err
 		vacancies = append(vacancies, reply.Vacancy)
 	}
 	return vacancies, nil
+}
+
+func (s *Storage) GetVacanciesBySchoolID(schoolID uint) ([]db_models.Vacancy, error) {
+	var vacancies []db_models.Vacancy
+
+	result := s.db.Distinct().
+		Joins("JOIN vacancy_courses ON vacancy_courses.vacancy_id = vacancies.id").
+		Joins("JOIN courses ON courses.id = vacancy_courses.course_id").
+		Where("courses.school_id = ?", schoolID).
+		Preload("Company").
+		Preload("Status").
+		Preload("Format").
+		Preload("Category").
+		Preload("Hr").
+		Preload("PaymentForAccommodation").
+		Preload("FarePayment").
+		Preload("Courses").
+		Preload("Description").
+		Preload("Keywords").
+		Find(&vacancies)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return vacancies, nil
+}
+
+func (s *Storage) GetSchoolByModeratorID(moderatorID int64) (uint, error) {
+	var moderator db_models.Moderator
+	if err := s.db.First(&moderator, moderatorID).Error; err != nil {
+		return 0, err
+	}
+	return moderator.SchoolID, nil
 }

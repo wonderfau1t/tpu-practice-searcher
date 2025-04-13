@@ -14,6 +14,8 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/get_company_details"
 	"tpu-practice-searcher/internal/http-server/handlers/get_vacancy_details"
+	"tpu-practice-searcher/internal/http-server/handlers/moderator/get_all_vacancies_by_courses"
+	"tpu-practice-searcher/internal/http-server/handlers/moderator/get_vacancy_info"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_company_info"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_replies"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies"
@@ -84,6 +86,9 @@ func main() {
 
 		r.Post("/reply", reply_to_vacancy.New(log, db))
 		r.Get("/replies", get_replies.New(log, db))
+
+		r.Get("/school/vacancies", get_all_vacancies_by_courses.New(log, db))
+		r.Get("/moderator/vacancies/{id}", get_vacancy_info.New(log, db))
 	})
 
 	http.ListenAndServe("0.0.0.0:8000", router)
