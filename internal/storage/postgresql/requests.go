@@ -432,3 +432,15 @@ func (s *Storage) FilterVacancies(categoryID *uint, courseIDs []uint) ([]db_mode
 
 	return vacancies, nil
 }
+
+func (s *Storage) IsReplied(studentID int64, vacancyID uint) (*bool, error) {
+	var count int64
+	err := s.db.Model(&db_models.Reply{}).
+		Where("student_id = ? AND vacancy_id = ?", studentID, vacancyID).
+		Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
+	result := count > 0
+	return &result, nil
+}

@@ -30,18 +30,11 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 			return
 		}
 
-		vacancyIdStr := chi.URLParam(r, "id")
-		if vacancyIdStr == "" {
-			log.Info("id is empty")
+		vacancyId, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+		if err != nil || vacancyId == 0 {
+			log.Info("invalid id")
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, utils.NewErrorResponse("id must not be empty"))
-			return
-		}
-		vacancyId, err := strconv.ParseUint(vacancyIdStr, 10, 64)
-		if err != nil {
-			log.Info("id not type of uint")
-			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, utils.NewErrorResponse("id must be type of uint"))
+			render.JSON(w, r, utils.NewErrorResponse("id must be a valid positive integer"))
 			return
 		}
 
@@ -62,7 +55,10 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 		var dto DetailsVacancyDTO
 
 		switch claims.Role {
-		case "student", "headHR", "HR":
+		case "student":
+			dto = toVacancyDTO(vacancy)
+			dto.IsReplied, _ = db.IsReplied(claims.UserID, uint(vacancyId))
+		case "headHR", "HR":
 			dto = toVacancyDTO(vacancy)
 		case "moderator":
 			dto = toVacancyDTOFull(vacancy)

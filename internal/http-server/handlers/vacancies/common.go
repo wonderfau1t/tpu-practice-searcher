@@ -22,6 +22,7 @@ type GetResponse struct {
 type DetailsVacancyDTO struct {
 	Id                      uint                  `json:"id"`
 	Name                    string                `json:"name"`
+	IsReplied               *bool                 `json:"isReplied,omitempty"`
 	CompanyID               uint                  `json:"companyID"`
 	CompanyName             string                `json:"companyName"`
 	Format                  string                `json:"format"`
@@ -54,6 +55,7 @@ type DetailsUserDTO struct {
 
 type DetailsStorage interface {
 	GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error)
+	IsReplied(studentID int64, vacancyID uint) (*bool, error)
 }
 
 func GetAllVacanciesForStudent(db GetStorage) ([]GetVacancyDTO, error) {
