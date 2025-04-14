@@ -10,6 +10,11 @@ import (
 	"tpu-practice-searcher/internal/utils/constants"
 )
 
+type Response struct {
+	Role        string `json:"role"`
+	AccessToken string `json:"accessToken"`
+}
+
 type Storage interface {
 	IsUserExist(userId int64) (bool, error)
 	CreateNewUser(userId int64, username string, roleId uint) error
@@ -59,7 +64,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			return
 		}
 
-		result := RegisterResult{AccessToken: accessToken, Role: "student"}
+		result := Response{AccessToken: accessToken, Role: "student"}
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, utils.NewSuccessResponse(result))
 	}

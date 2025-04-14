@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"net/http"
 	"os"
 	"tpu-practice-searcher/internal/config"
@@ -27,6 +28,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/filter"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
+	"tpu-practice-searcher/internal/http-server/handlers/webhook"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -44,6 +46,11 @@ func main() {
 	}
 	log.Info("Storage successfully set")
 
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
+	if err != nil {
+		log.Error("Failed to create bot: %v", err)
+	}
+
 	router := chi.NewRouter()
 
 	router.Use(middleware.Recoverer)
@@ -60,6 +67,8 @@ func main() {
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		render.JSON(w, r, map[string]string{"message": "Hello world!"})
 	})
+
+	router.Post("/bot/webhook", webhook.New(bot, log, db))
 
 	// Справочная информация
 	router.Route("/search", func(r chi.Router) {

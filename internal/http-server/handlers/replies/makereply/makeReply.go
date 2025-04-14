@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"strconv"
 	"tpu-practice-searcher/internal/http-server/middlewares"
+	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 )
 
 type Storage interface {
+	GetUserByID(userID int64) (*db_models.User, error)
 	AddReply(studentID int64, vacancyID uint) error
 }
 
@@ -20,6 +22,20 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 		if !ok {
 			render.Status(r, http.StatusUnauthorized)
 			render.JSON(w, r, utils.NewErrorResponse("Failed to parse claims"))
+			return
+		}
+
+		user, err := db.GetUserByID(claims.UserID)
+		if err != nil {
+			log.Error("failed to check phoneNumber")
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, utils.NewErrorResponse("internal server error"))
+			return
+		}
+
+		if !user.PhoneNumber.Valid {
+			render.Status(r, http.StatusForbidden)
+			render.JSON(w, r, utils.NewErrorResponse("phone number must be approved"))
 			return
 		}
 

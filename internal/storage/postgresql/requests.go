@@ -456,7 +456,6 @@ func (s *Storage) SearchVacancies(searchQuery string) ([]db_models.Vacancy, erro
 		Where("vacancies.name ILIKE ? OR vk.keyword ILIKE ?", searchPattern, searchPattern).
 		Group("vacancies.id")
 
-	// Предзагружаем связанные данные
 	if err := query.Preload("Category").
 		Preload("Company").
 		//Preload("Courses").
@@ -524,4 +523,14 @@ func (s *Storage) FindOrRegisterByUsername(userID int64, username string) (*db_m
 	}
 	user.ID = userID
 	return &user, true, nil
+}
+
+func (s *Storage) ApprovePhoneNumber(userID int64, phoneNumber string) error {
+	err := s.db.Model(&db_models.User{}).
+		Where("id = ?", userID).
+		UpdateColumn("phone_number", phoneNumber).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
