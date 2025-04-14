@@ -468,3 +468,60 @@ func (s *Storage) SearchVacancies(searchQuery string) ([]db_models.Vacancy, erro
 
 	return vacancies, nil
 }
+
+func (s *Storage) FindOrRegisterByUsername(userID int64, username string) (*db_models.User, bool, error) {
+	var user db_models.User
+
+	// Сначала ищем по userID
+	err := s.db.Preload("Role").Where("id = ?", userID).First(&user).Error
+	if err == nil {
+		return &user, true, nil // Пользователь уже полностью зарегистрирован
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, false, err // Возвращаем ошибку, если это не "не найдено"
+	}
+
+	err = s.db.Preload("Role").Where("username = ?", username).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, false, storage.ErrRecordNotFound // Пользователь вообще не существует
+	}
+	if err != nil {
+		return nil, false, err // Другая ошибка
+	}
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+
+		var hr db_models.HrManager
+		err := tx.Find(&hr, user.ID).Error
+		if err != nil {
+			return err
+		}
+		companyID := hr.CompanyID
+
+		err = tx.Delete(&hr).Error
+		if err != nil {
+			return err
+		}
+
+		err = tx.Model(&user).Updates(map[string]interface{}{
+			"id":        userID,
+			"status_id": 5,
+		}).Error
+		if err != nil {
+			return err
+		}
+
+		err = tx.Create(&db_models.HrManager{UserID: userID, CompanyID: companyID}).Error
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, false, err
+	}
+	user.ID = userID
+	return &user, true, nil
+}
