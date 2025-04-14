@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
+	"tpu-practice-searcher/internal/storage"
 	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils/constants"
 )
@@ -207,6 +208,9 @@ func (s *Storage) GetAllVacanciesOfCompany(companyID uint) ([]db_models.Vacancy,
 
 	var vacancies []db_models.Vacancy
 	if err := s.db.Debug().Preload("Company").Preload("Courses").Preload("Category").Where("company_id = ?", companyID).Find(&vacancies).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, storage.ErrRecordNotFound
+		}
 		return nil, err
 	}
 	return vacancies, nil
@@ -273,6 +277,9 @@ func (s *Storage) CreateNewHr(username string, companyID uint) error {
 func (s *Storage) GetCompanyInfo(companyID uint) (*db_models.Company, error) {
 	var company db_models.Company
 	if err := s.db.First(&company, companyID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, storage.ErrRecordNotFound
+		}
 		return nil, err
 	}
 	return &company, nil
@@ -300,17 +307,33 @@ func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
 func (s *Storage) GetAllVacancies() ([]db_models.Vacancy, error) {
 	var vacancies []db_models.Vacancy
 	if err := s.db.Debug().Preload("Company").Preload("Category").Preload("Courses").Find(&vacancies).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, storage.ErrRecordNotFound
+		}
 		return nil, err
 	}
 	return vacancies, nil
 }
 
 func (s *Storage) AddReply(studentID int64, vacancyID uint) error {
-	reply := db_models.Reply{
-		VacancyID: vacancyID,
-		StudentID: studentID,
+	var vacancy db_models.Vacancy
+	if err := s.db.Find(&vacancy, vacancyID).Error; err != nil {
+		return err
 	}
-	if err := s.db.Create(&reply).Error; err != nil {
+
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		reply := db_models.Reply{
+			VacancyID: vacancyID,
+			StudentID: studentID,
+		}
+		if err := tx.Create(&reply).Error; err != nil {
+			return err
+		}
+		vacancy.NumberOfResponses = vacancy.NumberOfResponses + 1
+		tx.Save(&vacancy)
+		return nil
+	})
+	if err != nil {
 		return err
 	}
 	return nil
@@ -350,6 +373,9 @@ func (s *Storage) GetVacanciesBySchoolID(schoolID uint) ([]db_models.Vacancy, er
 		Find(&vacancies)
 
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, storage.ErrRecordNotFound
+		}
 		return nil, result.Error
 	}
 
@@ -359,7 +385,50 @@ func (s *Storage) GetVacanciesBySchoolID(schoolID uint) ([]db_models.Vacancy, er
 func (s *Storage) GetSchoolByModeratorID(moderatorID int64) (uint, error) {
 	var moderator db_models.Moderator
 	if err := s.db.First(&moderator, moderatorID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, storage.ErrRecordNotFound
+		}
 		return 0, err
 	}
 	return moderator.SchoolID, nil
+}
+
+func (s *Storage) DeleteReply(studentID int64, vacancyID uint) error {
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		// Удаление отклика
+		if err := tx.Where("vacancy_id = ? AND student_id = ?", vacancyID, studentID).
+			Delete(&db_models.Reply{}).Error; err != nil {
+			return err
+		}
+		// Уменьшить счетчик
+		if err := tx.Model(&db_models.Vacancy{}).
+			Where("id = ?", vacancyID).
+			UpdateColumn("number_of_responses", gorm.Expr("number_of_responses - ?", 1)).
+			Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+func (s *Storage) FilterVacancies(categoryID *uint, courseIDs []uint) ([]db_models.Vacancy, error) {
+	var vacancies []db_models.Vacancy
+	query := s.db.Model(&db_models.Vacancy{})
+
+	if categoryID != nil {
+		query = query.Where("category_id = ?", *categoryID)
+	}
+
+	if len(courseIDs) > 0 {
+		query = query.Joins("JOIN vacancy_courses vc ON vc.vacancy_id = vacancies.id").
+			Where("vc.course_id IN ?", courseIDs).
+			Group("vacancies.id")
+	}
+
+	if err := query.Preload("Category").Find(&vacancies).Error; err != nil {
+		return nil, err
+	}
+
+	return vacancies, nil
 }

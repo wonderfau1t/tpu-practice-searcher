@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const AccessTokenTTL = time.Minute * 50
+const AccessTokenTTL = time.Minute * 240
 
 var AccessTokenSecret = []byte(os.Getenv("JWT_SECRET_TOKEN"))
 

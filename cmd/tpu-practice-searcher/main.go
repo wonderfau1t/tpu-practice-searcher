@@ -9,6 +9,7 @@ import (
 	"os"
 	"tpu-practice-searcher/internal/config"
 	"tpu-practice-searcher/internal/http-server/handlers"
+	"tpu-practice-searcher/internal/http-server/handlers/companies"
 	"tpu-practice-searcher/internal/http-server/handlers/create_new_hr"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
@@ -16,11 +17,15 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/get_vacancy_details"
 	"tpu-practice-searcher/internal/http-server/handlers/moderator/get_all_vacancies_by_courses"
 	"tpu-practice-searcher/internal/http-server/handlers/moderator/get_vacancy_info"
+	"tpu-practice-searcher/internal/http-server/handlers/replies/deletereply"
+	"tpu-practice-searcher/internal/http-server/handlers/replies/makereply"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_company_info"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_replies"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies"
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/student/reply_to_vacancy"
+	"tpu-practice-searcher/internal/http-server/handlers/vacancies"
+	"tpu-practice-searcher/internal/http-server/handlers/vacancies/filter"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -64,6 +69,19 @@ func main() {
 		r.Get("/courses", handlers.GetAllCourses(log, db))
 	})
 
+	// Финальные эндпоинты
+	router.Route("/api/v1", func(r chi.Router) {
+		r.Use(middlewares.AuthMiddleware)
+		r.Get("/vacancies", vacancies.GetVacancies(log, db))
+		r.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
+		r.Get("/vacancies/filter", filter.New(log, db))
+
+		r.Post("/vacancies/{vacancyID}/replies", makereply.New(log, db))
+		r.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
+
+		r.Get("/companies/{id}", companies.New(log, db))
+
+	})
 	// Вакансии
 	router.Get("/vacancies", get_vacancies.New(log, db))
 	// Подробная информация о вакансии
@@ -72,7 +90,7 @@ func main() {
 	router.Get("/companies/{id}/vacancies", get_vacancies_of_company.New(log, db))
 	// Профиль компании
 	router.Get("/companies/{id}/info", get_company_info.New(log, db))
-
+	//
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
 		r.Get("/auth", handlers.Auth(log, db))

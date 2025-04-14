@@ -1,0 +1,148 @@
+package vacancies
+
+import (
+	"errors"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
+	"log/slog"
+	"net/http"
+	"strconv"
+	"tpu-practice-searcher/internal/http-server/middlewares"
+	"tpu-practice-searcher/internal/storage"
+	"tpu-practice-searcher/internal/storage/models/db_models"
+	"tpu-practice-searcher/internal/utils"
+)
+
+type DetailsResponse struct {
+	VacancyInfo DetailsVacancyDTO `json:"vacancyInfo"`
+}
+
+func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const fn = "handlers.vacancies.GetVacancyDetails"
+		log := log.With(slog.String("fn", fn))
+
+		claims, ok := middlewares.CtxClaims(r.Context())
+		if !ok {
+			log.Info("not valid accessToken")
+			render.Status(r, http.StatusUnauthorized)
+			render.JSON(w, r, utils.NewErrorResponse("failed to parse claims"))
+			return
+		}
+
+		vacancyIdStr := chi.URLParam(r, "id")
+		if vacancyIdStr == "" {
+			log.Info("id is empty")
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, utils.NewErrorResponse("id must not be empty"))
+			return
+		}
+		vacancyId, err := strconv.ParseUint(vacancyIdStr, 10, 64)
+		if err != nil {
+			log.Info("id not type of uint")
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, utils.NewErrorResponse("id must be type of uint"))
+			return
+		}
+
+		vacancy, err := db.GetVacancyByID(uint(vacancyId))
+		if err != nil {
+			if errors.Is(err, storage.ErrRecordNotFound) {
+				log.Info("vacancy not found")
+				render.Status(r, http.StatusNotFound)
+				render.JSON(w, r, utils.NewSuccessResponse("vacancy not found"))
+				return
+			}
+			log.Error(err.Error())
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+			return
+		}
+
+		var dto DetailsVacancyDTO
+
+		switch claims.Role {
+		case "student", "headHR", "HR":
+			dto = toVacancyDTO(vacancy)
+		case "moderator":
+			dto = toVacancyDTOFull(vacancy)
+		}
+
+		render.Status(r, http.StatusOK)
+		render.JSON(w, r, utils.NewSuccessResponse(DetailsResponse{VacancyInfo: dto}))
+	}
+}
+
+func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
+	dto := DetailsVacancyDTO{
+		Id:                      vacancy.ID,
+		Name:                    vacancy.Name,
+		CompanyID:               vacancy.CompanyID,
+		CompanyName:             vacancy.Company.Name,
+		Format:                  vacancy.Format.Name,
+		Category:                vacancy.Category.Name,
+		DeadlineAt:              vacancy.DeadlineAt,
+		PaymentForAccommodation: vacancy.PaymentForAccommodation.Name,
+		FarePayment:             vacancy.FarePayment.Name,
+		Description: DetailsDescriptionDTO{
+			Workplace:      vacancy.Description.Workplace.String,
+			Position:       vacancy.Description.Position.String,
+			Salary:         vacancy.Description.Salary.String,
+			Requirements:   vacancy.Description.Requirements.String,
+			Food:           vacancy.Description.Food.String,
+			Conditions:     vacancy.Description.Conditions.String,
+			AdditionalInfo: vacancy.Description.AdditionalInfo.String,
+		},
+	}
+	for _, course := range vacancy.Courses {
+		dto.Courses = append(dto.Courses, course.Name)
+	}
+	for _, keyword := range vacancy.Keywords {
+		dto.Keywords = append(dto.Keywords, keyword.Keyword)
+	}
+	return dto
+}
+
+func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
+	dto := DetailsVacancyDTO{
+		Id:                      vacancy.ID,
+		Name:                    vacancy.Name,
+		CompanyID:               vacancy.CompanyID,
+		CompanyName:             vacancy.Company.Name,
+		Format:                  vacancy.Format.Name,
+		Category:                vacancy.Category.Name,
+		DeadlineAt:              vacancy.DeadlineAt,
+		PaymentForAccommodation: vacancy.PaymentForAccommodation.Name,
+		FarePayment:             vacancy.FarePayment.Name,
+		Description: DetailsDescriptionDTO{
+			Workplace:      vacancy.Description.Workplace.String,
+			Position:       vacancy.Description.Position.String,
+			Salary:         vacancy.Description.Salary.String,
+			Requirements:   vacancy.Description.Requirements.String,
+			Food:           vacancy.Description.Food.String,
+			Conditions:     vacancy.Description.Conditions.String,
+			AdditionalInfo: vacancy.Description.AdditionalInfo.String,
+		},
+		HrInfo: &DetailsUserDTO{
+			ID:          vacancy.Hr.ID,
+			Username:    vacancy.Hr.Username,
+			PhoneNumber: vacancy.Hr.PhoneNumber.String,
+		},
+	}
+
+	for _, course := range vacancy.Courses {
+		dto.Courses = append(dto.Courses, course.Name)
+	}
+	for _, keyword := range vacancy.Keywords {
+		dto.Keywords = append(dto.Keywords, keyword.Keyword)
+	}
+
+	for _, reply := range vacancy.Replies {
+		dto.RepliedStudents = append(dto.RepliedStudents, DetailsUserDTO{
+			ID:          reply.Student.ID,
+			Username:    reply.Student.Username,
+			PhoneNumber: reply.Student.PhoneNumber.String,
+		})
+	}
+	return dto
+}

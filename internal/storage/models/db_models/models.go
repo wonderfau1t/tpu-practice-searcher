@@ -160,8 +160,9 @@ type VacancyKeywords struct {
 }
 
 type Reply struct {
-	VacancyID uint  `gorm:"primaryKey"`
-	StudentID int64 `gorm:"primaryKey"`
+	ID        uint `gorm:"primaryKey"`
+	VacancyID uint
+	StudentID int64
 
 	Vacancy Vacancy `gorm:"foreignKey:VacancyID"`
 	Student User    `gorm:"foreignKey:StudentID"`

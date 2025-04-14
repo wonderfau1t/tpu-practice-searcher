@@ -8,16 +8,16 @@ import (
 	"tpu-practice-searcher/internal/utils"
 )
 
-type VacancyDTO struct {
-	Id          uint   `json:"id"`
-	Name        string `json:"name"`
-	CompanyName string `json:"companyName"`
-	Category    string `json:"category"`
-}
-
 type Response struct {
 	TotalCount int          `json:"totalCount"`
 	Vacancies  []VacancyDTO `json:"vacancies"`
+}
+type VacancyDTO struct {
+	ID             uint   `json:"id"`
+	Name           string `json:"name"`
+	CompanyName    string `json:"companyName,omitempty"`
+	Category       string `json:"category"`
+	CountOfReplies *int   `json:"countOfReplies,omitempty"`
 }
 
 type Storage interface {
@@ -37,7 +37,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 
 		for i, vacancy := range vacancies {
 			dtos[i] = VacancyDTO{
-				Id:          vacancy.ID,
+				ID:          vacancy.ID,
 				Name:        vacancy.Name,
 				CompanyName: vacancy.Company.Name,
 				Category:    vacancy.Category.Name,
