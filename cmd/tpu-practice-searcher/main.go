@@ -70,55 +70,104 @@ func main() {
 
 	router.Post("/bot/webhook", webhook.New(bot, log, db))
 
-	// Справочная информация
-	router.Route("/search", func(r chi.Router) {
-		r.Get("/categories", handlers.GetAllCategories(log, db))
-		r.Get("/formats", handlers.GetAllFormats(log, db))
-		r.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
-		r.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
-		r.Get("/courses", handlers.GetAllCourses(log, db))
+	router.Route("/backend/", func(r chi.Router) {
+		r.Route("/search", func(r1 chi.Router) {
+			r1.Get("/categories", handlers.GetAllCategories(log, db))
+			r1.Get("/formats", handlers.GetAllFormats(log, db))
+			r1.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
+			r1.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
+			r1.Get("/courses", handlers.GetAllCourses(log, db))
+		})
+
+		r.Route("/api/v1", func(r1 chi.Router) {
+			r1.Use(middlewares.AuthMiddleware)
+			r1.Get("/vacancies", vacancies.GetVacancies(log, db))
+			r1.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
+			r1.Get("/vacancies/filter", filter.New(log, db))
+			r1.Get("/vacancies/search", search.New(log, db))
+
+			r1.Post("/vacancies/{vacancyID}/replies", makereply.New(log, db))
+			r1.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
+
+			r1.Get("/companies/{id}", companies.New(log, db))
+
+		})
+
+		r.Get("/vacancies", get_vacancies.New(log, db))
+		// Подробная информация о вакансии
+		r.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
+		// Вакансии определенной компании
+		r.Get("/companies/{id}/vacancies", get_vacancies_of_company.New(log, db))
+		// Профиль компании
+		r.Get("/companies/{id}/info", get_company_info.New(log, db))
+
+		r.Group(func(r1 chi.Router) {
+			r1.Use(middlewares.AuthMiddleware)
+			r1.Get("/auth", handlers.Auth(log, db))
+			r1.Get("/register", handlers.RegisterStudent(log, db))
+			r1.Post("/registerCompany", handlers.RegisterCompany(log, db))
+			r1.Post("/addVacancy", handlers.AddVacancy(log, db))
+			r1.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
+			r1.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
+			r1.Post("/company/createHr", create_new_hr.New(log, db))
+			r1.Get("/company/info", get_company_details.New(log, db))
+
+			r1.Post("/reply", reply_to_vacancy.New(log, db))
+			r1.Get("/replies", get_replies.New(log, db))
+
+			r1.Get("/school/vacancies", get_all_vacancies_by_courses.New(log, db))
+			r1.Get("/moderator/vacancies/{id}", get_vacancy_info.New(log, db))
+		})
 	})
+	// Справочная информация
+	//router.Route("/search", func(r chi.Router) {
+	//	r.Get("/categories", handlers.GetAllCategories(log, db))
+	//	r.Get("/formats", handlers.GetAllFormats(log, db))
+	//	r.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
+	//	r.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
+	//	r.Get("/courses", handlers.GetAllCourses(log, db))
+	//})
 
 	// Финальные эндпоинты
-	router.Route("/api/v1", func(r chi.Router) {
-		r.Use(middlewares.AuthMiddleware)
-		r.Get("/vacancies", vacancies.GetVacancies(log, db))
-		r.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
-		r.Get("/vacancies/filter", filter.New(log, db))
-		r.Get("/vacancies/search", search.New(log, db))
-
-		r.Post("/vacancies/{vacancyID}/replies", makereply.New(log, db))
-		r.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
-
-		r.Get("/companies/{id}", companies.New(log, db))
-
-	})
-	// Вакансии
-	router.Get("/vacancies", get_vacancies.New(log, db))
-	// Подробная информация о вакансии
-	router.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
-	// Вакансии определенной компании
-	router.Get("/companies/{id}/vacancies", get_vacancies_of_company.New(log, db))
-	// Профиль компании
-	router.Get("/companies/{id}/info", get_company_info.New(log, db))
+	//router.Route("/api/v1", func(r chi.Router) {
+	//	r.Use(middlewares.AuthMiddleware)
+	//	r.Get("/vacancies", vacancies.GetVacancies(log, db))
+	//	r.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
+	//	r.Get("/vacancies/filter", filter.New(log, db))
+	//	r.Get("/vacancies/search", search.New(log, db))
 	//
-	router.Group(func(r chi.Router) {
-		r.Use(middlewares.AuthMiddleware)
-		r.Get("/auth", handlers.Auth(log, db))
-		r.Get("/register", handlers.RegisterStudent(log, db))
-		r.Post("/registerCompany", handlers.RegisterCompany(log, db))
-		r.Post("/addVacancy", handlers.AddVacancy(log, db))
-		r.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
-		r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
-		r.Post("/company/createHr", create_new_hr.New(log, db))
-		r.Get("/company/info", get_company_details.New(log, db))
-
-		r.Post("/reply", reply_to_vacancy.New(log, db))
-		r.Get("/replies", get_replies.New(log, db))
-
-		r.Get("/school/vacancies", get_all_vacancies_by_courses.New(log, db))
-		r.Get("/moderator/vacancies/{id}", get_vacancy_info.New(log, db))
-	})
+	//	r.Post("/vacancies/{vacancyID}/replies", makereply.New(log, db))
+	//	r.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
+	//
+	//	r.Get("/companies/{id}", companies.New(log, db))
+	//
+	//})
+	// Вакансии
+	//router.Get("/vacancies", get_vacancies.New(log, db))
+	//// Подробная информация о вакансии
+	//router.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
+	//// Вакансии определенной компании
+	//router.Get("/companies/{id}/vacancies", get_vacancies_of_company.New(log, db))
+	//// Профиль компании
+	//router.Get("/companies/{id}/info", get_company_info.New(log, db))
+	////
+	//router.Group(func(r chi.Router) {
+	//	r.Use(middlewares.AuthMiddleware)
+	//	r.Get("/auth", handlers.Auth(log, db))
+	//	r.Get("/register", handlers.RegisterStudent(log, db))
+	//	r.Post("/registerCompany", handlers.RegisterCompany(log, db))
+	//	r.Post("/addVacancy", handlers.AddVacancy(log, db))
+	//	r.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
+	//	r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
+	//	r.Post("/company/createHr", create_new_hr.New(log, db))
+	//	r.Get("/company/info", get_company_details.New(log, db))
+	//
+	//	r.Post("/reply", reply_to_vacancy.New(log, db))
+	//	r.Get("/replies", get_replies.New(log, db))
+	//
+	//	r.Get("/school/vacancies", get_all_vacancies_by_courses.New(log, db))
+	//	r.Get("/moderator/vacancies/{id}", get_vacancy_info.New(log, db))
+	//})
 
 	http.ListenAndServe("0.0.0.0:8000", router)
 }
