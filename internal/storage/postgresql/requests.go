@@ -426,7 +426,9 @@ func (s *Storage) FilterVacancies(categoryID *uint, courseIDs []uint) ([]db_mode
 			Group("vacancies.id")
 	}
 
-	if err := query.Preload("Category").Find(&vacancies).Error; err != nil {
+	if err := query.Preload("Category").
+		Preload("Company").
+		Find(&vacancies).Error; err != nil {
 		return nil, err
 	}
 
@@ -443,4 +445,26 @@ func (s *Storage) IsReplied(studentID int64, vacancyID uint) (*bool, error) {
 	}
 	result := count > 0
 	return &result, nil
+}
+
+func (s *Storage) SearchVacancies(searchQuery string) ([]db_models.Vacancy, error) {
+	var vacancies []db_models.Vacancy
+	query := s.db.Model(&db_models.Vacancy{})
+
+	searchPattern := "%" + searchQuery + "%"
+	query = query.Joins("LEFT JOIN vacancy_keywords vk ON vk.vacancy_id = vacancies.id").
+		Where("vacancies.name ILIKE ? OR vk.keyword ILIKE ?", searchPattern, searchPattern).
+		Group("vacancies.id")
+
+	// Предзагружаем связанные данные
+	if err := query.Preload("Category").
+		Preload("Company").
+		//Preload("Courses").
+		//Preload("Description").
+		//Preload("Keywords").
+		Find(&vacancies).Error; err != nil {
+		return nil, err
+	}
+
+	return vacancies, nil
 }

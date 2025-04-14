@@ -26,6 +26,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/student/reply_to_vacancy"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/filter"
+	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -75,6 +76,7 @@ func main() {
 		r.Get("/vacancies", vacancies.GetVacancies(log, db))
 		r.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
 		r.Get("/vacancies/filter", filter.New(log, db))
+		r.Get("/vacancies/search", search.New(log, db))
 
 		r.Post("/vacancies/{vacancyID}/replies", makereply.New(log, db))
 		r.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
