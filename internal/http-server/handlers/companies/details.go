@@ -2,10 +2,11 @@ package companies
 
 import (
 	"errors"
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
-	"tpu-practice-searcher/internal/http-server/middlewares"
+	"strconv"
 	"tpu-practice-searcher/internal/storage"
 	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
@@ -27,15 +28,16 @@ type Storage interface {
 
 func New(log *slog.Logger, db Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		claims, ok := middlewares.CtxClaims(r.Context())
-		if !ok {
-			log.Info("not valid accessToken")
-			render.Status(r, http.StatusUnauthorized)
-			render.JSON(w, r, utils.NewErrorResponse("Failed to parse claims"))
+
+		companyID, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+		if err != nil || companyID == 0 {
+			log.Info("invalid id")
+			render.Status(r, http.StatusBadRequest)
+			render.JSON(w, r, utils.NewErrorResponse("id must be a valid positive integer"))
 			return
 		}
 
-		company, err := db.GetCompanyInfo(claims.CompanyID)
+		company, err := db.GetCompanyInfo(uint(companyID))
 		if err != nil {
 			if errors.Is(err, storage.ErrRecordNotFound) {
 				log.Info("vacancy not found")
