@@ -41,6 +41,7 @@ type AddVacancyResult struct {
 }
 
 type AddVacancyController interface {
+	GetUserByID(userID int64) (*db_models.User, error)
 	CreateNewVacancy(vacancy *db_models.Vacancy) error
 	GetCompanyByHrID(hrID int64) (*db_models.HrManager, error)
 }
@@ -54,6 +55,20 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 		if !ok {
 			render.Status(r, http.StatusUnauthorized)
 			render.JSON(w, r, utils.NewErrorResponse("Failed to parse claims"))
+			return
+		}
+
+		user, err := db.GetUserByID(claims.UserID)
+		if err != nil {
+			log.Error("failed to check phoneNumber")
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, utils.NewErrorResponse("internal server error"))
+			return
+		}
+
+		if !user.PhoneNumber.Valid {
+			render.Status(r, http.StatusForbidden)
+			render.JSON(w, r, utils.NewErrorResponse("phone number must be approved"))
 			return
 		}
 
