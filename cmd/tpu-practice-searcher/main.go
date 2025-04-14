@@ -64,13 +64,17 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		render.JSON(w, r, map[string]string{"message": "Hello world!"})
-	})
+	//router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	//	render.JSON(w, r, map[string]string{"message": "Hello world!"})
+	//})
 
-	router.Post("/bot/webhook", webhook.New(bot, log, db))
+	//router.Post("/bot/webhook", webhook.New(bot, log, db))
 
-	router.Route("/backend/", func(r chi.Router) {
+	router.Route("/backend", func(r chi.Router) {
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			render.JSON(w, r, map[string]string{"message": "Hello world!"})
+		})
+		r.Post("/bot/webhook", webhook.New(bot, log, db))
 		r.Route("/search", func(r1 chi.Router) {
 			r1.Get("/categories", handlers.GetAllCategories(log, db))
 			r1.Get("/formats", handlers.GetAllFormats(log, db))
