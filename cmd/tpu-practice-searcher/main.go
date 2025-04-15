@@ -11,6 +11,7 @@ import (
 	"tpu-practice-searcher/internal/config"
 	"tpu-practice-searcher/internal/http-server/handlers"
 	"tpu-practice-searcher/internal/http-server/handlers/companies"
+	"tpu-practice-searcher/internal/http-server/handlers/companies/updatecompanyinfo"
 	"tpu-practice-searcher/internal/http-server/handlers/create_new_hr"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/get_all_vacancies_of_company"
@@ -27,6 +28,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/student/reply_to_vacancy"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/filter"
+	"tpu-practice-searcher/internal/http-server/handlers/vacancies/hide"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
 	"tpu-practice-searcher/internal/http-server/handlers/webhook"
 	"tpu-practice-searcher/internal/http-server/middlewares"
@@ -87,6 +89,7 @@ func main() {
 			r1.Use(middlewares.AuthMiddleware)
 			r1.Get("/vacancies", vacancies.GetVacancies(log, db))
 			r1.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
+			r1.Patch("/vacancies/{id}", hide.New(log, db))
 			r1.Get("/vacancies/filter", filter.New(log, db))
 			r1.Get("/vacancies/search", search.New(log, db))
 
@@ -94,6 +97,7 @@ func main() {
 			r1.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
 
 			r1.Get("/companies/{id}", companies.New(log, db))
+			r1.Put("/companies/updateInfo", updatecompanyinfo.New(log, db))
 
 		})
 

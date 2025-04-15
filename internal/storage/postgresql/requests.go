@@ -548,3 +548,21 @@ func (s *Storage) ApprovePhoneNumber(userID int64, phoneNumber string) error {
 	}
 	return nil
 }
+
+func (s *Storage) HideVacancyByID(vacancyID uint) error {
+	err := s.db.Model(&db_models.Vacancy{}).
+		Where("id = ?", vacancyID).
+		UpdateColumn("status_id", 4).Error
+	return err
+}
+
+func (s *Storage) UpdateCompanyInfo(companyID uint, name string, description string, link string) error {
+	err := s.db.Model(&db_models.Company{}).
+		Where("id = ?", companyID).
+		Updates(map[string]interface{}{
+			"name":        name,
+			"description": description,
+			"link":        link,
+		}).Error
+	return err
+}
