@@ -207,7 +207,13 @@ func (s *Storage) GetAllVacanciesOfCompany(companyID uint) ([]db_models.Vacancy,
 	//const fn = "storage.postg"
 
 	var vacancies []db_models.Vacancy
-	if err := s.db.Debug().Preload("Company").Preload("Courses").Preload("Category").Where("company_id = ?", companyID).Find(&vacancies).Error; err != nil {
+	if err := s.db.Debug().
+		Preload("Company").
+		Preload("Courses").
+		Preload("Category").
+		Where("company_id = ?", companyID).
+		Where("status_id = ?", 5).
+		Find(&vacancies).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, storage.ErrRecordNotFound
 		}
@@ -297,7 +303,9 @@ func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
 		Preload("Description").
 		Preload("Courses").
 		Preload("Keywords").
-		Preload("Replies").Preload("Replies.Student").
+		Preload("Replies").
+		Preload("Replies.Student").
+		Where("status_id = ?", 5).
 		First(&vacancy, vacancyID).Error; err != nil {
 		return nil, err
 	}
@@ -306,7 +314,12 @@ func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
 
 func (s *Storage) GetAllVacancies() ([]db_models.Vacancy, error) {
 	var vacancies []db_models.Vacancy
-	if err := s.db.Debug().Preload("Company").Preload("Category").Preload("Courses").Find(&vacancies).Error; err != nil {
+	if err := s.db.Debug().
+		Preload("Company").
+		Preload("Category").
+		Preload("Courses").
+		Where("status_id = ?", 5).
+		Find(&vacancies).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, storage.ErrRecordNotFound
 		}
@@ -360,6 +373,7 @@ func (s *Storage) GetVacanciesBySchoolID(schoolID uint) ([]db_models.Vacancy, er
 		Joins("JOIN vacancy_courses ON vacancy_courses.vacancy_id = vacancies.id").
 		Joins("JOIN courses ON courses.id = vacancy_courses.course_id").
 		Where("courses.school_id = ?", schoolID).
+		Where("vacancies.status_id = ?", 5).
 		Preload("Company").
 		Preload("Status").
 		Preload("Format").
