@@ -1,37 +1,37 @@
 services:
-  backend:
+  devbackend:
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
     image: tpu-practice-searcher:latest
-    container_name: tpu-practice-searcher-container
+    container_name: dev-tpu-practice-searcher-container
     networks:
-      - prod_net
+      - dev_net
     environment:
       JWT_SECRET_TOKEN: "JWT_SECRET_TOKEN"
-      TELEGRAM_BOT_TOKEN: "7650435197:AAFWerS9j6ikk2MFlQ6raTgRFin2BL3FbQ0"
+      TELEGRAM_BOT_TOKEN: "7675767595:AAE1xhwh82krR72WnINHFYPGCshT4ZfYKVU"
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - devdb
     command: "./tpu-practice-searcher"
 
-  db:
+  devdb:
     image: postgres:latest
-    container_name: postgres-container
+    container_name: dev-postgres-container
     networks:
-      - prod_net
+      - dev_net
     environment:
       - POSTGRES_USER=notdefaultuser
       - POSTGRES_PASSWORD=notdefaultuserpassword
       - POSTGRES_DB=db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - dev_postgres_data:/var/lib/postgresql/data
     restart: always
 volumes:
-  postgres_data:
+  dev_postgres_data:
 networks:
-  prod_net:
+  dev_net:
