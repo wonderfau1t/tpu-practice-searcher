@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-chi/render"
 	initdata "github.com/telegram-mini-apps/init-data-golang"
 	"net/http"
@@ -52,7 +53,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if err := initdata.Validate(authData, token, time.Hour*150); err != nil {
 				render.Status(r, http.StatusUnauthorized)
 				render.JSON(w, r, utils.NewErrorResponse("Unauthorized"))
-
+				fmt.Println(authData, token)
 				return
 			}
 
