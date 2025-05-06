@@ -17,7 +17,7 @@ type Storage struct {
 func SetupStorage(storageConf config.Storage) (*Storage, error) {
 	const fn = "storage.postrgresql.SetupStorage"
 
-	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=%d", storageConf.User, storageConf.Password, storageConf.Dbname, storageConf.Port)
+	dsn := fmt.Sprintf("host=devdb user=%s password=%s dbname=%s port=%d", storageConf.User, storageConf.Password, storageConf.Dbname, storageConf.Port)
 	db, err := gorm.Open(postgres.Open(dsn))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", fn, err)
