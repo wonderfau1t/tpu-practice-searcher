@@ -281,7 +281,6 @@ func (s *Storage) GetVacancyByID(vacancyID uint) (*db_models.Vacancy, error) {
 		Preload("Company").
 		Preload("Hr").
 		Preload("Format").
-		Preload("Category").
 		Preload("PaymentForAccommodation").
 		Preload("FarePayment").
 		Preload("Description").
