@@ -360,7 +360,6 @@ func (s *Storage) GetVacanciesBySchoolID(schoolID uint) ([]db_models.Vacancy, er
 		Preload("Company").
 		Preload("Status").
 		Preload("Format").
-		Preload("Category").
 		Preload("Hr").
 		Preload("PaymentForAccommodation").
 		Preload("FarePayment").
