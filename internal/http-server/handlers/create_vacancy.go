@@ -23,9 +23,9 @@ type VacancyDescription struct {
 }
 
 type AddVacancyRequest struct {
-	Name                           string             `json:"name" validate:"required"`
-	FormatID                       uint               `json:"formatID" validate:"required"`
-	CategoryID                     uint               `json:"categoryID" validate:"required"`
+	Name     string `json:"name" validate:"required"`
+	FormatID uint   `json:"formatID" validate:"required"`
+	//CategoryID                     uint               `json:"categoryID" validate:"required"`
 	Courses                        []uint             `json:"courses" validate:"required"`
 	Keywords                       []string           `json:"keywords"`
 	DeadlineAt                     string             `json:"deadlineAt" validate:"required"`
@@ -105,12 +105,12 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 		}
 
 		vacancy := db_models.Vacancy{
-			Name:                           req.Name,
-			CompanyID:                      company.CompanyID,
-			HrID:                           claims.UserID,
-			StatusID:                       constants.StatusDefault,
-			FormatID:                       req.FormatID,
-			CategoryID:                     req.CategoryID,
+			Name:      req.Name,
+			CompanyID: company.CompanyID,
+			HrID:      claims.UserID,
+			StatusID:  constants.StatusDefault,
+			FormatID:  req.FormatID,
+			//CategoryID:                     req.CategoryID,
 			NumberOfResponses:              0,
 			DeadlineAt:                     req.DeadlineAt,
 			PaymentForAccommodationID:      req.PaymentForAccommodationID,

@@ -70,7 +70,6 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			dtos[i] = VacancyDTO{
 				Id:          vacancy.ID,
 				Name:        vacancy.Name,
-				Category:    vacancy.Category.Name,
 				CompanyName: vacancy.Company.Name,
 			}
 		}

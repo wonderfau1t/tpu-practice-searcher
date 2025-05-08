@@ -48,7 +48,6 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 				Id:          vacancy.ID,
 				Name:        vacancy.Name,
 				CompanyName: vacancy.Company.Name,
-				Category:    vacancy.Category.Name,
 			}
 		}
 

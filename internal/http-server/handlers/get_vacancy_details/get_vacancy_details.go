@@ -74,7 +74,6 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			CompanyID:               vacancy.CompanyID,
 			CompanyName:             vacancy.Company.Name,
 			Format:                  vacancy.Format.Name,
-			Category:                vacancy.Category.Name,
 			DeadlineAt:              vacancy.DeadlineAt,
 			PaymentForAccommodation: vacancy.PaymentForAccommodation.Name,
 			FarePayment:             vacancy.FarePayment.Name,

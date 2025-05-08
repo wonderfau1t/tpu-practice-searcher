@@ -25,7 +25,7 @@ func SetupStorage(storageConf config.Storage) (*Storage, error) {
 
 	err = db.AutoMigrate(&db_models.Role{}, &db_models.User{}, &db_models.Status{}, &db_models.Company{},
 		&db_models.School{}, &db_models.Course{}, &db_models.Moderator{}, &db_models.HrManager{}, &db_models.Format{},
-		&db_models.Category{}, &db_models.PaymentForAccommodation{}, &db_models.FarePayment{}, &db_models.Vacancy{},
+		&db_models.PaymentForAccommodation{}, &db_models.FarePayment{}, &db_models.Vacancy{},
 		&db_models.VacancyDescription{}, &db_models.VacancyKeywords{}, &db_models.Reply{})
 	if err != nil {
 		log.Fatalf("failed to apply migrations")
@@ -54,11 +54,6 @@ func SetupStorage(storageConf config.Storage) (*Storage, error) {
 	err = initializePaymentForAccommodation(db)
 	if err != nil {
 		log.Fatalf("failed to set default PaymentForAccommodation")
-	}
-
-	err = initializeCategories(db)
-	if err != nil {
-		log.Fatalf("failed to set default Categories")
 	}
 
 	err = initializeSchools(db)
@@ -119,16 +114,6 @@ func initializePaymentForAccommodation(db *gorm.DB) error {
 	for _, option := range initial_data.DefaultPaymentForAccommodation {
 		if err := db.FirstOrCreate(&option, option).Error; err != nil {
 			return fmt.Errorf("%s: failed to add status: %s: %w", fn, option.Name, err)
-		}
-	}
-	return nil
-}
-
-func initializeCategories(db *gorm.DB) error {
-	const fn = "storage.postgresql.initializeSchools"
-	for _, category := range initial_data.DefaultCategories {
-		if err := db.FirstOrCreate(&category, category).Error; err != nil {
-			return fmt.Errorf("%s: failed to add status: %s: %w", fn, category.Name, err)
 		}
 	}
 	return nil

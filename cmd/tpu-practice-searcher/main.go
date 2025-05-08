@@ -59,12 +59,12 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			render.JSON(w, r, map[string]string{"message": "Hello world!"})
 		})
 		r.Route("/search", func(r1 chi.Router) {
-			r1.Get("/categories", handlers.GetAllCategories(log, db))
 			r1.Get("/formats", handlers.GetAllFormats(log, db))
 			r1.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
 			r1.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))

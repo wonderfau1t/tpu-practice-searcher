@@ -25,7 +25,7 @@ services:
     environment:
       - POSTGRES_USER=notdefaultuser
       - POSTGRES_PASSWORD=notdefaultuserpassword
-      - POSTGRES_DB=db
+      - POSTGRES_DB=devdb
     ports:
       - "5433:5432"
     volumes:

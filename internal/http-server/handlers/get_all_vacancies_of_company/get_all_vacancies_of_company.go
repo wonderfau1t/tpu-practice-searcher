@@ -64,7 +64,6 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			dtos[i] = VacancyDTO{
 				ID:               vacancy.ID,
 				Name:             vacancy.Name,
-				Category:         vacancy.Category.Name,
 				CountOfResponses: vacancy.NumberOfResponses,
 			}
 			for _, course := range vacancy.Courses {

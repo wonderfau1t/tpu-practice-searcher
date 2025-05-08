@@ -95,13 +95,14 @@ type Format struct {
 	Vacancies []Vacancy `gorm:"foreignKey:FormatID" json:"-"`
 }
 
+// Ушли от использования категорий
 // Категории (IT, нефтегаз и тд)
-type Category struct {
-	ID   uint   `gorm:"primaryKey" json:"id"`
-	Name string `gorm:"unique" json:"name"`
-
-	Vacancies []Vacancy `gorm:"foreignKey:CategoryID" json:"-"`
-}
+//type Category struct {
+//	ID   uint   `gorm:"primaryKey" json:"id"`
+//	Name string `gorm:"unique" json:"name"`
+//
+//	Vacancies []Vacancy `gorm:"foreignKey:CategoryID" json:"-"`
+//}
 
 type PaymentForAccommodation struct {
 	ID   uint   `gorm:"primaryKey" json:"id"`
@@ -116,12 +117,12 @@ type FarePayment struct {
 // Вакансия
 type Vacancy struct {
 	gorm.Model
-	Name                           string
-	CompanyID                      uint
-	HrID                           int64
-	StatusID                       uint
-	FormatID                       uint
-	CategoryID                     uint
+	Name      string
+	CompanyID uint
+	HrID      int64
+	StatusID  uint
+	FormatID  uint
+	//CategoryID                     uint
 	Courses                        []Course           `gorm:"many2many:vacancy_courses"`
 	Description                    VacancyDescription `gorm:"foreignKey:VacancyID"`
 	Keywords                       []VacancyKeywords  `gorm:"foreignKey:VacancyID"`
@@ -132,12 +133,12 @@ type Vacancy struct {
 	FarePaymentID                  uint
 	FarePaymentDetails             sql.NullString
 
-	Replies                 []Reply                 `gorm:"foreignKey:VacancyID"`
-	Company                 Company                 `gorm:"foreignKey:CompanyID"`
-	Hr                      User                    `gorm:"foreignKey:HrID"`
-	Status                  Status                  `gorm:"foreignKey:StatusID"`
-	Format                  Format                  `gorm:"foreignKey:FormatID"`
-	Category                Category                `gorm:"foreignKey:CategoryID"`
+	Replies []Reply `gorm:"foreignKey:VacancyID"`
+	Company Company `gorm:"foreignKey:CompanyID"`
+	Hr      User    `gorm:"foreignKey:HrID"`
+	Status  Status  `gorm:"foreignKey:StatusID"`
+	Format  Format  `gorm:"foreignKey:FormatID"`
+	//Category                Category                `gorm:"foreignKey:CategoryID"`
 	PaymentForAccommodation PaymentForAccommodation `gorm:"foreignKey:PaymentForAccommodationID"`
 	FarePayment             FarePayment             `gorm:"foreignKey:FarePaymentID"`
 }

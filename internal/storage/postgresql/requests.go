@@ -26,21 +26,6 @@ func (s *Storage) GetUserByID(userID int64) (*db_models.User, error) {
 	return &user, nil
 }
 
-func (s *Storage) GetAllCategories() ([]db_models.Category, error) {
-	const fn = "storage.postgresql.GetAllCategories"
-
-	var categories []db_models.Category
-	err := s.db.Debug().Find(&categories).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, gorm.ErrRecordNotFound
-		}
-		return nil, fmt.Errorf("%s: %w", fn, err)
-	}
-
-	return categories, nil
-}
-
 func (s *Storage) GetAllFormats() ([]db_models.Format, error) {
 	const fn = "storage.postgresql.GetAllFormats"
 

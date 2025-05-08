@@ -73,7 +73,6 @@ func GetAllVacanciesForStudent(db GetStorage) ([]GetVacancyDTO, error) {
 			ID:          vacancy.ID,
 			Name:        vacancy.Name,
 			CompanyName: vacancy.Company.Name,
-			Category:    vacancy.Category.Name,
 		}
 	}
 	return dtos, err
@@ -91,7 +90,6 @@ func GetAllVacanciesForHr(companyID uint, db GetStorage) ([]GetVacancyDTO, error
 		dtos[i] = GetVacancyDTO{
 			ID:             vacancy.ID,
 			Name:           vacancy.Name,
-			Category:       vacancy.Category.Name,
 			CountOfReplies: &vacancy.NumberOfResponses,
 		}
 	}
@@ -115,7 +113,6 @@ func GetAllVacanciesForModerator(moderatorID int64, db GetStorage) ([]GetVacancy
 			ID:             vacancy.ID,
 			Name:           vacancy.Name,
 			CompanyName:    vacancy.Company.Name,
-			Category:       vacancy.Category.Name,
 			CountOfReplies: &vacancy.NumberOfResponses,
 		}
 	}
