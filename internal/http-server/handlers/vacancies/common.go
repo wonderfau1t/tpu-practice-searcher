@@ -10,7 +10,6 @@ type GetVacancyDTO struct {
 	ID             uint   `json:"id"`
 	Name           string `json:"name"`
 	CompanyName    string `json:"companyName,omitempty"`
-	Category       string `json:"category"`
 	CountOfReplies *int   `json:"countOfReplies,omitempty"`
 }
 
@@ -26,7 +25,6 @@ type DetailsVacancyDTO struct {
 	CompanyID               uint                  `json:"companyID"`
 	CompanyName             string                `json:"companyName"`
 	Format                  string                `json:"format"`
-	Category                string                `json:"category"`
 	Courses                 []string              `json:"courses"`
 	Keywords                []string              `json:"keywords"`
 	DeadlineAt              string                `json:"deadlineAt"`

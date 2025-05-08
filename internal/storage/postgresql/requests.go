@@ -195,7 +195,6 @@ func (s *Storage) GetAllVacanciesOfCompany(companyID uint) ([]db_models.Vacancy,
 	if err := s.db.Debug().
 		Preload("Company").
 		Preload("Courses").
-		Preload("Category").
 		Where("company_id = ?", companyID).
 		Where("status_id = ?", 5).
 		Find(&vacancies).Error; err != nil {
