@@ -58,7 +58,7 @@ func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 
 		var accessToken string
 		switch user.Role.Name {
-		case "student":
+		case "student", "admin":
 			accessToken, err = utils.GenerateStudentAccessToken(user.ID, user.Username, user.Role.Name)
 		case "moderator":
 			accessToken, err = utils.GenerateStudentAccessToken(user.ID, user.Username, user.Role.Name)
