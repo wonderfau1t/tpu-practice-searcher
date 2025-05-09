@@ -107,7 +107,6 @@ func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 		Id:                      vacancy.ID,
 		Name:                    vacancy.Name,
 		CompanyID:               vacancy.CompanyID,
-		CompanyName:             vacancy.Company.Name,
 		Format:                  vacancy.Format.Name,
 		DeadlineAt:              vacancy.DeadlineAt,
 		PaymentForAccommodation: vacancy.PaymentForAccommodation.Name,
@@ -126,6 +125,11 @@ func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 			Username:    vacancy.Hr.Username,
 			PhoneNumber: vacancy.Hr.PhoneNumber.String,
 		},
+	}
+	if vacancy.CompanyID != nil {
+		dto.CompanyName = vacancy.Company.Name
+	} else {
+		dto.CompanyName = *vacancy.CompanyName
 	}
 
 	for _, course := range vacancy.Courses {
