@@ -134,7 +134,7 @@ func (s *Storage) CreateNewCompany(userId int64, username string, companyName st
 			Name:        companyName,
 			Description: companyDescription,
 			Link:        companyLink,
-			StatusID:    constants.StatusDefault,
+			StatusID:    constants.StatusUnderReview,
 			HeadHrID:    hr.ID,
 		}
 		if err := tx.Create(&company).Error; err != nil {
@@ -299,7 +299,6 @@ func (s *Storage) GetAllVacancies() ([]db_models.Vacancy, error) {
 	var vacancies []db_models.Vacancy
 	if err := s.db.Debug().
 		Preload("Company").
-		Preload("Category").
 		Preload("Courses").
 		Where("status_id = ?", 5).
 		Find(&vacancies).Error; err != nil {
@@ -339,7 +338,7 @@ func (s *Storage) GetRepliedVacancies(studentID int64) ([]db_models.Vacancy, err
 	var vacancies []db_models.Vacancy
 
 	var replies []db_models.Reply
-	if err := s.db.Preload("Vacancy.Category").Preload("Vacancy.Company").Find(&replies, "student_id = ?", studentID).Error; err != nil {
+	if err := s.db.Preload("Vacancy.Company").Find(&replies, "student_id = ?", studentID).Error; err != nil {
 		return nil, err
 	}
 
@@ -547,4 +546,72 @@ func (s *Storage) UpdateCompanyInfo(companyID uint, name string, description str
 			"link":        link,
 		}).Error
 	return err
+}
+
+func (s *Storage) GetUnderReviewCompanies() ([]db_models.Company, error) {
+	var companies []db_models.Company
+
+	err := s.db.Find(&companies, "status_id = ?", constants.StatusUnderReview).Error
+	if err != nil {
+		return nil, err
+	}
+	return companies, nil
+}
+
+func (s *Storage) UpdateCompanyStatus(companyID uint, statusID int) error {
+	err := s.db.Model(&db_models.Company{}).
+		Where("id = ?", companyID).
+		UpdateColumn("status_id", statusID).Error
+	return err
+}
+
+func (s *Storage) GetDepartments() ([]db_models.Department, error) {
+	var departments []db_models.Department
+
+	err := s.db.Preload("Courses").Find(&departments).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return departments, nil
+}
+
+func (s *Storage) UpdateVacancy(vacancy *db_models.Vacancy) error {
+	tx := s.db.Begin()
+
+	// Обновляем основную вакансию
+	if err := tx.Save(vacancy).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Обновляем Description (один-к-одному)
+	vacancy.Description.VacancyID = vacancy.ID // на всякий случай
+	if err := tx.Save(&vacancy.Description).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Обновляем Courses (many-to-many)
+	if err := tx.Model(vacancy).Association("Courses").Replace(vacancy.Courses); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Удаляем старые Keywords вручную
+	if err := tx.Where("vacancy_id = ?", vacancy.ID).Delete(&db_models.VacancyKeywords{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Добавляем новые Keywords
+	for i := range vacancy.Keywords {
+		vacancy.Keywords[i].VacancyID = vacancy.ID
+	}
+	if err := tx.Create(&vacancy.Keywords).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

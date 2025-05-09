@@ -1,4 +1,4 @@
-package get_vacancies
+package vacancies
 
 import (
 	"github.com/go-chi/render"
@@ -8,10 +8,6 @@ import (
 	"tpu-practice-searcher/internal/utils"
 )
 
-type Response struct {
-	TotalCount int          `json:"totalCount"`
-	Vacancies  []VacancyDTO `json:"vacancies"`
-}
 type VacancyDTO struct {
 	ID             uint   `json:"id"`
 	Name           string `json:"name"`
@@ -19,26 +15,40 @@ type VacancyDTO struct {
 	CountOfReplies *int   `json:"countOfReplies,omitempty"`
 }
 
-type Storage interface {
+type Response struct {
+	TotalCount int          `json:"totalCount"`
+	Vacancies  []VacancyDTO `json:"vacancies"`
+}
+
+type VacancyRepository interface {
 	GetAllVacancies() ([]db_models.Vacancy, error)
 }
 
-func New(log *slog.Logger, db Storage) http.HandlerFunc {
+func List(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vacancies, err := db.GetAllVacancies()
+		const fn = "handlers.List"
+		log := log.With(slog.String("fn", fn))
+		_ = log
+
+		vacancies, err := repo.GetAllVacancies()
 		if err != nil {
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
 			return
 		}
 
 		dtos := make([]VacancyDTO, len(vacancies))
-
 		for i, vacancy := range vacancies {
+
+			var companyName string
+			if vacancy.CompanyID == nil {
+				companyName = *vacancy.CompanyName
+			} else {
+				companyName = vacancy.Company.Name
+			}
+
 			dtos[i] = VacancyDTO{
 				ID:          vacancy.ID,
 				Name:        vacancy.Name,
-				CompanyName: *vacancy.CompanyName,
+				CompanyName: companyName,
 			}
 		}
 

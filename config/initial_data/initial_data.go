@@ -4,7 +4,76 @@ import (
 	"tpu-practice-searcher/internal/storage/models/db_models"
 )
 
+var DefaultDepartments = []db_models.Department{
+	{
+		ID:   1,
+		Name: "Отделение нефтегазового дела",
+	},
+}
+
+var NewDefaultCourses = []db_models.Course{
+	{
+		ID:           1,
+		Name:         "Машины и оборудование нефтегазового комплекса",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           2,
+		Name:         "Эксплуатация и обслуживание объектов транспорта и хранения нефти, газа и продуктов переработки",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           3,
+		Name:         "Разработка и эксплуатация нефтяных и газовых месторождений",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           4,
+		Name:         "Бурение нефтяных и газовых скважин",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           5,
+		Name:         "Надежность и безопасность объектов транспорта и хранения углеводородов",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           6,
+		Name:         "Машины и оборудование нефтяных и газовых промыслов",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           7,
+		Name:         "Разработка и эксплуатация нефтяных и газовых месторождений",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           8,
+		Name:         "Технология строительства нефтяных и газовых скважин",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+	{
+		ID:           9,
+		Name:         "Оценка и управление резервуаром / Нефтегазовый инжиниринг",
+		DepartmentID: 1,
+		SchoolID:     52,
+	},
+}
+
 var DefaultSchools = []db_models.School{
+	{
+		ID:        52,
+		Name:      "Тест",
+		ShortName: "ТСТ",
+	},
 	{
 		ID:        1,
 		Name:      "Бизнес-школа",

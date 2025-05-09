@@ -34,6 +34,14 @@ type User struct {
 	Role   Role
 }
 
+// Отделения
+type Department struct {
+	ID   uint `gorm:"primaryKey"`
+	Name string
+
+	Courses []Course `gorm:"foreignKey:DepartmentID"`
+}
+
 // Школы
 type School struct {
 	ID        uint `gorm:"primaryKey"`
@@ -45,12 +53,14 @@ type School struct {
 
 // Направления
 type Course struct {
-	ID       uint   `gorm:"primaryKey" json:"id"`
-	Name     string `json:"name"`
-	SchoolID uint   `json:"-"`
+	ID           uint   `gorm:"primaryKey" json:"id"`
+	Name         string `json:"name"`
+	SchoolID     uint   `json:"-"`
+	DepartmentID uint
 
-	School    School    `json:"-"`
-	Vacancies []Vacancy `gorm:"many2many:vacancy_courses" json:"-"`
+	School     School `json:"-"`
+	Department Department
+	Vacancies  []Vacancy `gorm:"many2many:vacancy_courses" json:"-"`
 }
 
 // Модератор (человек от ТПУ), который ответственен за направления школы
@@ -95,15 +105,6 @@ type Format struct {
 	Vacancies []Vacancy `gorm:"foreignKey:FormatID" json:"-"`
 }
 
-// Ушли от использования категорий
-// Категории (IT, нефтегаз и тд)
-//type Category struct {
-//	ID   uint   `gorm:"primaryKey" json:"id"`
-//	Name string `gorm:"unique" json:"name"`
-//
-//	Vacancies []Vacancy `gorm:"foreignKey:CategoryID" json:"-"`
-//}
-
 type PaymentForAccommodation struct {
 	ID   uint   `gorm:"primaryKey" json:"id"`
 	Name string `gorm:"unique" json:"name"`
@@ -117,12 +118,12 @@ type FarePayment struct {
 // Вакансия
 type Vacancy struct {
 	gorm.Model
-	Name      string
-	CompanyID uint
-	HrID      int64
-	StatusID  uint
-	FormatID  uint
-	//CategoryID                     uint
+	Name                           string
+	CompanyID                      *uint
+	CompanyName                    *string
+	HrID                           int64
+	StatusID                       uint
+	FormatID                       uint
 	Courses                        []Course           `gorm:"many2many:vacancy_courses"`
 	Description                    VacancyDescription `gorm:"foreignKey:VacancyID"`
 	Keywords                       []VacancyKeywords  `gorm:"foreignKey:VacancyID"`
@@ -133,12 +134,11 @@ type Vacancy struct {
 	FarePaymentID                  uint
 	FarePaymentDetails             sql.NullString
 
-	Replies []Reply `gorm:"foreignKey:VacancyID"`
-	Company Company `gorm:"foreignKey:CompanyID"`
-	Hr      User    `gorm:"foreignKey:HrID"`
-	Status  Status  `gorm:"foreignKey:StatusID"`
-	Format  Format  `gorm:"foreignKey:FormatID"`
-	//Category                Category                `gorm:"foreignKey:CategoryID"`
+	Replies                 []Reply                 `gorm:"foreignKey:VacancyID"`
+	Company                 *Company                `gorm:"foreignKey:CompanyID"`
+	Hr                      User                    `gorm:"foreignKey:HrID"`
+	Status                  Status                  `gorm:"foreignKey:StatusID"`
+	Format                  Format                  `gorm:"foreignKey:FormatID"`
 	PaymentForAccommodation PaymentForAccommodation `gorm:"foreignKey:PaymentForAccommodationID"`
 	FarePayment             FarePayment             `gorm:"foreignKey:FarePaymentID"`
 }
@@ -158,6 +158,8 @@ type VacancyDescription struct {
 type VacancyKeywords struct {
 	VacancyID uint   `gorm:"primaryKey"`
 	Keyword   string `gorm:"primaryKey"`
+
+	Vacancy Vacancy `gorm:"foreignKey:VacancyID;constraint:OnDelete:CASCADE;"`
 }
 
 type Reply struct {

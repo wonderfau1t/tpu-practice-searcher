@@ -78,7 +78,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 		dto := VacancyDTO{
 			Id:                      vacancy.ID,
 			Name:                    vacancy.Name,
-			CompanyID:               vacancy.CompanyID,
+			CompanyID:               *vacancy.CompanyID,
 			CompanyName:             vacancy.Company.Name,
 			Format:                  vacancy.Format.Name,
 			DeadlineAt:              vacancy.DeadlineAt,

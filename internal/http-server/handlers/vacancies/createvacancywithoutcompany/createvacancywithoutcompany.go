@@ -1,4 +1,4 @@
-package handlers
+package createvacancywithoutcompany
 
 import (
 	"github.com/go-chi/render"
@@ -22,10 +22,10 @@ type VacancyDescription struct {
 	AdditionalInfo string `json:"additionalInfo"`
 }
 
-type AddVacancyRequest struct {
-	Name     string `json:"name" validate:"required"`
-	FormatID uint   `json:"formatID" validate:"required"`
-	//CategoryID                     uint               `json:"categoryID" validate:"required"`
+type Request struct {
+	CompanyName                    string             `json:"companyName" validate:"required"`
+	VacancyName                    string             `json:"vacancyName" validate:"required"`
+	FormatID                       uint               `json:"formatID" validate:"required"`
 	Courses                        []uint             `json:"courses" validate:"required"`
 	Keywords                       []string           `json:"keywords"`
 	DeadlineAt                     string             `json:"deadlineAt" validate:"required"`
@@ -33,22 +33,18 @@ type AddVacancyRequest struct {
 	PaymentForAccommodationDetails string             `json:"paymentForAccommodationDetails"`
 	FarePaymentID                  uint               `json:"farePaymentID" validate:"required"`
 	FarePaymentDetails             string             `json:"farePaymentDetails"`
-	Description                    VacancyDescription `json:"description"`
+	Description                    VacancyDescription `json:"description,omitempty"`
 }
 
-type AddVacancyResult struct {
-	ID uint `json:"ID"`
-}
-
-type AddVacancyController interface {
+type Storage interface {
 	GetUserByID(userID int64) (*db_models.User, error)
 	CreateNewVacancy(vacancy *db_models.Vacancy) error
 	GetCompanyByHrID(hrID int64) (*db_models.HrManager, error)
 }
 
-func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
+func New(log *slog.Logger, db Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "handlers.AddVacancy"
+		const fn = "handlers.createvacancywithoutcompany.New"
 		log := log.With(slog.String("fn", fn))
 
 		claims, ok := middlewares.CtxClaims(r.Context())
@@ -65,14 +61,16 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			render.JSON(w, r, utils.NewErrorResponse("internal server error"))
 			return
 		}
+		_ = user
 
-		if !user.PhoneNumber.Valid {
-			render.Status(r, http.StatusForbidden)
-			render.JSON(w, r, utils.NewErrorResponse("phone number must be approved"))
-			return
-		}
+		// Должен ли быть подтвержденным номер телефона у админа или модератора
+		//if !user.PhoneNumber.Valid {
+		//	render.Status(r, http.StatusForbidden)
+		//	render.JSON(w, r, utils.NewErrorResponse("phone number must be approved"))
+		//	return
+		//}
 
-		var req AddVacancyRequest
+		var req Request
 		if err := render.DecodeJSON(r.Body, &req); err != nil {
 			log.Error(err.Error())
 			render.Status(r, http.StatusBadRequest)
@@ -96,21 +94,12 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			return
 		}
 
-		company, err := db.GetCompanyByHrID(claims.UserID)
-		if err != nil {
-			log.Error(err.Error())
-			render.Status(r, http.StatusInternalServerError)
-			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
-			return
-		}
-
 		vacancy := db_models.Vacancy{
-			Name:      req.Name,
-			CompanyID: &company.CompanyID,
-			HrID:      claims.UserID,
-			StatusID:  constants.StatusDefault,
-			FormatID:  req.FormatID,
-			//CategoryID:                     req.CategoryID,
+			Name:                           req.VacancyName,
+			CompanyName:                    &req.CompanyName,
+			HrID:                           claims.UserID,
+			StatusID:                       constants.StatusDefault,
+			FormatID:                       req.FormatID,
 			NumberOfResponses:              0,
 			DeadlineAt:                     req.DeadlineAt,
 			PaymentForAccommodationID:      req.PaymentForAccommodationID,
@@ -142,8 +131,5 @@ func AddVacancy(log *slog.Logger, db AddVacancyController) http.HandlerFunc {
 			return
 		}
 
-		result := AddVacancyResult{ID: vacancy.ID}
-		render.Status(r, http.StatusCreated)
-		render.JSON(w, r, utils.NewSuccessResponse(result))
 	}
 }

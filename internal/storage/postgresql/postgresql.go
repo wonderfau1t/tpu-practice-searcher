@@ -23,7 +23,7 @@ func SetupStorage(storageConf config.Storage) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	err = db.AutoMigrate(&db_models.Role{}, &db_models.User{}, &db_models.Status{}, &db_models.Company{},
+	err = db.AutoMigrate(&db_models.Role{}, &db_models.User{}, &db_models.Status{}, &db_models.Company{}, &db_models.Department{},
 		&db_models.School{}, &db_models.Course{}, &db_models.Moderator{}, &db_models.HrManager{}, &db_models.Format{},
 		&db_models.PaymentForAccommodation{}, &db_models.FarePayment{}, &db_models.Vacancy{},
 		&db_models.VacancyDescription{}, &db_models.VacancyKeywords{}, &db_models.Reply{})
@@ -59,6 +59,11 @@ func SetupStorage(storageConf config.Storage) (*Storage, error) {
 	err = initializeSchools(db)
 	if err != nil {
 		log.Fatalf("failed to set default Schools")
+	}
+
+	err = initializeDepartments(db)
+	if err != nil {
+		log.Fatalf("failed to set default Departments")
 	}
 
 	err = initializeCourses(db)
@@ -129,9 +134,19 @@ func initializeSchools(db *gorm.DB) error {
 	return nil
 }
 
+func initializeDepartments(db *gorm.DB) error {
+	const fn = "storage.postgresql.initializeSchools"
+	for _, department := range initial_data.DefaultDepartments {
+		if err := db.FirstOrCreate(&department, department).Error; err != nil {
+			return fmt.Errorf("%s: failed to add status: %s: %w", fn, department.Name, err)
+		}
+	}
+	return nil
+}
+
 func initializeCourses(db *gorm.DB) error {
 	const fn = "storage.postgresql.initializeSchools"
-	for _, course := range initial_data.DefaultCourses {
+	for _, course := range initial_data.NewDefaultCourses {
 		if err := db.FirstOrCreate(&course, course).Error; err != nil {
 			return fmt.Errorf("%s: failed to add status: %s: %w", fn, course.Name, err)
 		}

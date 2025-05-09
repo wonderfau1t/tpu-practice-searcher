@@ -22,7 +22,7 @@ type DetailsVacancyDTO struct {
 	Id                      uint                  `json:"id"`
 	Name                    string                `json:"name"`
 	IsReplied               *bool                 `json:"isReplied,omitempty"`
-	CompanyID               uint                  `json:"companyID"`
+	CompanyID               *uint                 `json:"companyID"`
 	CompanyName             string                `json:"companyName"`
 	Format                  string                `json:"format"`
 	Courses                 []string              `json:"courses"`

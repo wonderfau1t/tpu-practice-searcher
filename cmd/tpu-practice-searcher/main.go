@@ -26,10 +26,13 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/student/get_vacancies_of_company"
 	"tpu-practice-searcher/internal/http-server/handlers/student/reply_to_vacancy"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies"
+	"tpu-practice-searcher/internal/http-server/handlers/vacancies/createvacancywithoutcompany"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/filter"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/hide"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
 	"tpu-practice-searcher/internal/http-server/middlewares"
+	"tpu-practice-searcher/internal/http-server/new_handlers/references"
+	vacancies2 "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
 )
@@ -50,6 +53,7 @@ func main() {
 
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
+	router.Use(middleware.Logger)
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -59,11 +63,19 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	router.Get("/references/courses", references.Courses(log, db))
+
+	// Список вакансий
+	router.Get("/vacancies", vacancies2.List(log, db))
+	// Обновить информацию о вакансии
+	router.Put("/vacancies/{id}", vacancies2.Update(log, db))
+
 	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			render.JSON(w, r, map[string]string{"message": "Hello world!"})
 		})
+
 		r.Route("/search", func(r1 chi.Router) {
 			r1.Get("/formats", handlers.GetAllFormats(log, db))
 			r1.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
@@ -111,6 +123,8 @@ func main() {
 
 			r1.Get("/school/vacancies", get_all_vacancies_by_courses.New(log, db))
 			r1.Get("/moderator/vacancies/{id}", get_vacancy_info.New(log, db))
+
+			r1.Post("/createVacancyWithoutCompany", createvacancywithoutcompany.New(log, db))
 		})
 	})
 	// Справочная информация
