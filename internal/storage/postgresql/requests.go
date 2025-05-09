@@ -655,3 +655,11 @@ func (s *Storage) GetDepartmentByModeratorID(moderatorID int64) (uint, error) {
 	}
 	return moderator.DepartmentID, nil
 }
+
+func (s *Storage) UpdateCompany(company *db_models.Company) error {
+	err := s.db.Save(company).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

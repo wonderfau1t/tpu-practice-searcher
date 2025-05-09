@@ -31,6 +31,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/hide"
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
 	"tpu-practice-searcher/internal/http-server/middlewares"
+	companiesModule "tpu-practice-searcher/internal/http-server/new_handlers/companies"
 	"tpu-practice-searcher/internal/http-server/new_handlers/references"
 	vacanciesModule "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
 	"tpu-practice-searcher/internal/logger"
@@ -67,6 +68,7 @@ func main() {
 		r.Use(middlewares.AuthMiddleware)
 
 		r.Get("/vacancies", vacanciesModule.List(log, db))
+		r.Put("/companies/update", companiesModule.Update(log, db))
 	})
 
 	router.Get("/references/courses", references.Courses(log, db))
