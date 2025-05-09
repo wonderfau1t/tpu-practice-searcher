@@ -74,7 +74,7 @@ func main() {
 	// Список вакансий
 	//router.Get("/vacancies", vacanciesModule.List(log, db))
 	//// Обновить информацию о вакансии
-	//router.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
+	router.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
 
 	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {
