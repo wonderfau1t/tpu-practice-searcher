@@ -69,6 +69,8 @@ func main() {
 
 		r.Get("/vacancies", vacanciesModule.List(log, db))
 		r.Put("/companies/update", companiesModule.Update(log, db))
+		r.Patch("/companies/apply", companiesModule.Apply(log, db))
+		r.Patch("/companies/reject", companiesModule.Reject(log, db))
 	})
 
 	router.Get("/references/courses", references.Courses(log, db))
