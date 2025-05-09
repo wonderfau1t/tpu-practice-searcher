@@ -44,10 +44,16 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 		dtos := make([]VacancyDTO, len(vacancies))
 
 		for i, vacancy := range vacancies {
+			var companyName string
+			if vacancy.CompanyID == nil {
+				companyName = *vacancy.CompanyName
+			} else {
+				companyName = vacancy.Company.Name
+			}
 			dtos[i] = VacancyDTO{
 				Id:          vacancy.ID,
 				Name:        vacancy.Name,
-				CompanyName: vacancy.Company.Name,
+				CompanyName: companyName,
 			}
 		}
 
