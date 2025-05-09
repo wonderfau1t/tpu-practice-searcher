@@ -68,7 +68,10 @@ func main() {
 		r.Use(middlewares.AuthMiddleware)
 
 		r.Get("/vacancies", vacanciesModule.List(log, db))
+		r.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
+
 		r.Put("/companies/update", companiesModule.Update(log, db))
+		r.Get("/companies/requests", companiesModule.ListRequests(log, db))
 		r.Patch("/companies/apply", companiesModule.Apply(log, db))
 		r.Patch("/companies/reject", companiesModule.Reject(log, db))
 	})

@@ -551,7 +551,7 @@ func (s *Storage) UpdateCompanyInfo(companyID uint, name string, description str
 func (s *Storage) GetUnderReviewCompanies() ([]db_models.Company, error) {
 	var companies []db_models.Company
 
-	err := s.db.Find(&companies, "status_id = ?", constants.StatusUnderReview).Error
+	err := s.db.Preload("HeadHr").Find(&companies, "status_id = ?", constants.StatusUnderReview).Error
 	if err != nil {
 		return nil, err
 	}

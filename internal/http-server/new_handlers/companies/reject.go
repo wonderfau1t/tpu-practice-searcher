@@ -9,7 +9,8 @@ import (
 )
 
 type RejectCompanyRequest struct {
-	CompanyID uint `json:"companyID"`
+	CompanyID uint   `json:"companyID"`
+	Message   string `json:"message"`
 }
 
 type RejectRepository interface {
