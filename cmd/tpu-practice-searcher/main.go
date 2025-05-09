@@ -72,6 +72,7 @@ func main() {
 
 		r.Put("/companies/update", companiesModule.Update(log, db))
 		r.Get("/companies/requests", companiesModule.ListRequests(log, db))
+		r.Get("/companies/requests/{id}", companiesModule.Details(log, db))
 		r.Patch("/companies/apply", companiesModule.Apply(log, db))
 		r.Patch("/companies/reject", companiesModule.Reject(log, db))
 	})

@@ -15,10 +15,10 @@ type ReviewRepository interface {
 type CompanyDTO struct {
 	CompanyID    uint   `json:"companyID"`
 	Name         string `json:"name"`
-	Description  string `json:"description"`
-	Link         string `json:"link"`
+	Description  string `json:"description,omitempty"`
+	Link         string `json:"link,omitempty"`
 	RegisteredAt string `json:"registeredAt"`
-	HRUsername   string `json:"HRUsername"`
+	HRUsername   string `json:"HRUsername,omitempty"`
 }
 
 type RequestsResponse struct {
@@ -43,12 +43,12 @@ func ListRequests(log *slog.Logger, db ReviewRepository) http.HandlerFunc {
 		var companyDTOs []CompanyDTO
 		for _, company := range companies {
 			companyDTO := CompanyDTO{
-				CompanyID:    company.ID,
-				Name:         company.Name,
-				Description:  company.Description.String,
-				Link:         company.Link.String,
+				CompanyID: company.ID,
+				Name:      company.Name,
+				//Description:  company.Description.String,
+				//Link:         company.Link.String,
 				RegisteredAt: company.CreatedAt.Format("2006-01-02"),
-				HRUsername:   company.HeadHr.Username,
+				//HRUsername:   company.HeadHr.Username,
 			}
 			companyDTOs = append(companyDTOs, companyDTO)
 		}

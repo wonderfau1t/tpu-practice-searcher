@@ -266,7 +266,7 @@ func (s *Storage) CreateNewHr(username string, companyID uint) error {
 
 func (s *Storage) GetCompanyInfo(companyID uint) (*db_models.Company, error) {
 	var company db_models.Company
-	if err := s.db.First(&company, companyID).Error; err != nil {
+	if err := s.db.Preload("HeadHr").First(&company, companyID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, storage.ErrRecordNotFound
 		}
