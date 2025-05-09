@@ -385,7 +385,7 @@ func (s *Storage) GetSchoolByModeratorID(moderatorID int64) (uint, error) {
 		}
 		return 0, err
 	}
-	return moderator.SchoolID, nil
+	return 1, nil
 }
 
 func (s *Storage) DeleteReply(studentID int64, vacancyID uint) error {
@@ -614,4 +614,44 @@ func (s *Storage) UpdateVacancy(vacancy *db_models.Vacancy) error {
 	}
 
 	return tx.Commit().Error
+}
+
+func (s *Storage) GetVacanciesByDepartmentID(departmentID uint) ([]db_models.Vacancy, error) {
+	var vacancies []db_models.Vacancy
+
+	result := s.db.Distinct().
+		Joins("JOIN vacancy_courses ON vacancy_courses.vacancy_id = vacancies.id").
+		Joins("JOIN courses ON courses.id = vacancy_courses.course_id").
+		Where("courses.department_id = ?", departmentID).
+		Where("vacancies.status_id = ?", 5).
+		Preload("Company").
+		Preload("Status").
+		Preload("Format").
+		Preload("Hr").
+		Preload("PaymentForAccommodation").
+		Preload("FarePayment").
+		Preload("Courses").
+		Preload("Description").
+		Preload("Keywords").
+		Find(&vacancies)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, storage.ErrRecordNotFound
+		}
+		return nil, result.Error
+	}
+
+	return vacancies, nil
+}
+
+func (s *Storage) GetDepartmentByModeratorID(moderatorID int64) (uint, error) {
+	var moderator db_models.Moderator
+	if err := s.db.First(&moderator, moderatorID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, storage.ErrRecordNotFound
+		}
+		return 0, err
+	}
+	return moderator.DepartmentID, nil
 }

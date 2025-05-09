@@ -32,7 +32,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/http-server/new_handlers/references"
-	vacancies2 "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
+	vacanciesModule "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
 )
@@ -63,12 +63,18 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	router.Group(func(r chi.Router) {
+		r.Use(middlewares.AuthMiddleware)
+
+		r.Get("/vacancies", vacanciesModule.List(log, db))
+	})
+
 	router.Get("/references/courses", references.Courses(log, db))
 
 	// Список вакансий
-	router.Get("/vacancies", vacancies2.List(log, db))
-	// Обновить информацию о вакансии
-	router.Put("/vacancies/{id}", vacancies2.Update(log, db))
+	//router.Get("/vacancies", vacanciesModule.List(log, db))
+	//// Обновить информацию о вакансии
+	//router.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
 
 	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {

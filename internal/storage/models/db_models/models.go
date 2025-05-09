@@ -65,11 +65,11 @@ type Course struct {
 
 // Модератор (человек от ТПУ), который ответственен за направления школы
 type Moderator struct {
-	UserID   int64 `gorm:"primaryKey"`
-	SchoolID uint  `gorm:"primaryKey"`
+	UserID       int64 `gorm:"primaryKey"`
+	DepartmentID uint  `gorm:"primaryKey"`
 
-	User   User   `gorm:"foreignKey:UserID"`
-	School School `gorm:"foreignKey:SchoolID"`
+	User       User       `gorm:"foreignKey:UserID"`
+	Department Department `gorm:"foreignKey:DepartmentID"`
 }
 
 // Компания
