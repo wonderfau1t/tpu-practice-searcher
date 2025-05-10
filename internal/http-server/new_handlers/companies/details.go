@@ -16,6 +16,15 @@ type DetailsRepository interface {
 	GetCompanyInfo(companyID uint) (*db_models.Company, error)
 }
 
+type RequestDTO struct {
+	CompanyID    uint   `json:"companyID"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Link         string `json:"link"`
+	RegisteredAt string `json:"registeredAt"`
+	HRUsername   string `json:"HRUsername"`
+}
+
 func Details(log *slog.Logger, db DetailsRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "handlers..Details"
@@ -43,7 +52,7 @@ func Details(log *slog.Logger, db DetailsRepository) http.HandlerFunc {
 			return
 		}
 
-		dto := CompanyDTO{
+		dto := RequestDTO{
 			CompanyID:    company.ID,
 			Name:         company.Name,
 			Description:  company.Description.String,
