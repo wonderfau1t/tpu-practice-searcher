@@ -82,7 +82,7 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 	dto := DetailsVacancyDTO{
 		Id:                        vacancy.ID,
-		Name:                      vacancy.Name,
+		VacancyName:               vacancy.Name,
 		CompanyID:                 vacancy.CompanyID,
 		FormatID:                  vacancy.FormatID,
 		Format:                    vacancy.Format.Name,
@@ -128,7 +128,7 @@ func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 	dto := DetailsVacancyDTO{
 		Id:                        vacancy.ID,
-		Name:                      vacancy.Name,
+		VacancyName:               vacancy.Name,
 		CompanyID:                 vacancy.CompanyID,
 		FormatID:                  vacancy.FormatID,
 		Format:                    vacancy.Format.Name,

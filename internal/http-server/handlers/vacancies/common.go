@@ -21,7 +21,7 @@ type GetResponse struct {
 type DetailsVacancyDTO struct {
 	Id                             uint                  `json:"id"`
 	IsCreatedByUser                *bool                 `json:"isCreatedByUser,omitempty"`
-	Name                           string                `json:"name"`
+	VacancyName                    string                `json:"vacancyName"`
 	IsReplied                      *bool                 `json:"isReplied,omitempty"`
 	CompanyID                      *uint                 `json:"companyID"`
 	CompanyName                    string                `json:"companyName"`
