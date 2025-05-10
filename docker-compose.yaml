@@ -1,4 +1,17 @@
 services:
+  devbot:
+    restart: always
+    build:
+      context: tpu-practice-searcher-bot/
+      dockerfile: Dockerfile
+    image: tpu-practice-searcher-bot:latest
+    container_name: dev-tpu-practice-searcher-bot-container
+    networks:
+      - dev_net
+    environment:
+      DATABASE_URL: "postgres://notdefaultuser:notdefaultuserpassword@devdb:5432/devdb"
+    depends_on:
+      - devdb
   devbackend:
     restart: always
     build:
