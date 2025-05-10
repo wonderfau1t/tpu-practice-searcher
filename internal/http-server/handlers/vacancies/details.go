@@ -62,10 +62,15 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 			dto = toVacancyDTO(vacancy)
 		case "moderator", "admin":
 			dto = toVacancyDTOFull(vacancy)
+			t := new(bool)
+			f := new(bool)
+
+			*t = true
+			*f = false
 			if claims.UserID == dto.HrInfo.ID {
-				dto.IsCreatedByUser = true
+				dto.IsCreatedByUser = t
 			} else {
-				dto.IsCreatedByUser = false
+				dto.IsCreatedByUser = f
 			}
 		}
 
