@@ -45,9 +45,9 @@ func List(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 		var dtos []VacancyDTO
 		var err error
 		switch claims.Role {
-		case "student":
+		case "student", "admin":
 			dtos, err = getVacanciesForStudent(repo)
-		case "moderator", "admin":
+		case "moderator":
 			dtos, err = getVacanciesForModerator(claims.UserID, repo)
 		}
 
