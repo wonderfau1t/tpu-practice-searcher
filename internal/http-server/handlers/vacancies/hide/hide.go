@@ -27,7 +27,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			return
 		}
 
-		if claims.Role == "HR" || claims.Role == "headHR" {
+		if claims.Role == "HR" || claims.Role == "headHR" || claims.Role == "admin" {
 			vacancyId, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 			if err != nil || vacancyId == 0 {
 				log.Info("invalid id")
