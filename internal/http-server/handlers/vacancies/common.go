@@ -19,20 +19,25 @@ type GetResponse struct {
 }
 
 type DetailsVacancyDTO struct {
-	Id                      uint                  `json:"id"`
-	Name                    string                `json:"name"`
-	IsReplied               *bool                 `json:"isReplied,omitempty"`
-	CompanyID               *uint                 `json:"companyID"`
-	CompanyName             string                `json:"companyName"`
-	Format                  string                `json:"format"`
-	Courses                 []string              `json:"courses"`
-	Keywords                []string              `json:"keywords"`
-	DeadlineAt              string                `json:"deadlineAt"`
-	PaymentForAccommodation string                `json:"paymentForAccommodation"`
-	FarePayment             string                `json:"farePayment"`
-	Description             DetailsDescriptionDTO `json:"description"`
-	HrInfo                  *DetailsUserDTO       `json:"hrInfo,omitempty"`
-	RepliedStudents         []DetailsUserDTO      `json:"repliedStudents,omitempty"`
+	Id                             uint                  `json:"id"`
+	Name                           string                `json:"name"`
+	IsReplied                      *bool                 `json:"isReplied,omitempty"`
+	CompanyID                      *uint                 `json:"companyID"`
+	CompanyName                    string                `json:"companyName"`
+	Format                         string                `json:"format"`
+	FormatID                       uint                  `json:"formatID"`
+	Courses                        []interface{}         `json:"courses"`
+	Keywords                       []string              `json:"keywords"`
+	DeadlineAt                     string                `json:"deadlineAt"`
+	PaymentForAccommodationID      uint                  `json:"paymentForAccommodationID"`
+	PaymentForAccommodation        string                `json:"paymentForAccommodation"`
+	PaymentForAccommodationDetails string                `json:"paymentForAccommodationDetails,omitempty"`
+	FarePaymentID                  uint                  `json:"farePaymentID"`
+	FarePayment                    string                `json:"farePayment"`
+	FarePaymentDetails             string                `json:"farePaymentDetails,omitempty"`
+	Description                    DetailsDescriptionDTO `json:"description"`
+	HrInfo                         *DetailsUserDTO       `json:"hrInfo,omitempty"`
+	RepliedStudents                []DetailsUserDTO      `json:"repliedStudents,omitempty"`
 }
 
 type DetailsDescriptionDTO struct {

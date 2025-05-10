@@ -71,13 +71,16 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 
 func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 	dto := DetailsVacancyDTO{
-		Id:                      vacancy.ID,
-		Name:                    vacancy.Name,
-		CompanyID:               vacancy.CompanyID,
-		Format:                  vacancy.Format.Name,
-		DeadlineAt:              vacancy.DeadlineAt,
-		PaymentForAccommodation: vacancy.PaymentForAccommodation.Name,
-		FarePayment:             vacancy.FarePayment.Name,
+		Id:                        vacancy.ID,
+		Name:                      vacancy.Name,
+		CompanyID:                 vacancy.CompanyID,
+		FormatID:                  vacancy.FormatID,
+		Format:                    vacancy.Format.Name,
+		DeadlineAt:                vacancy.DeadlineAt,
+		PaymentForAccommodationID: vacancy.PaymentForAccommodationID,
+		PaymentForAccommodation:   vacancy.PaymentForAccommodation.Name,
+		FarePaymentID:             vacancy.FarePaymentID,
+		FarePayment:               vacancy.FarePayment.Name,
 		Description: DetailsDescriptionDTO{
 			Workplace:      vacancy.Description.Workplace.String,
 			Position:       vacancy.Description.Position.String,
@@ -87,6 +90,12 @@ func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 			Conditions:     vacancy.Description.Conditions.String,
 			AdditionalInfo: vacancy.Description.AdditionalInfo.String,
 		},
+	}
+	if dto.FarePaymentID == 3 {
+		dto.FarePaymentDetails = vacancy.FarePaymentDetails.String
+	}
+	if dto.PaymentForAccommodationID == 3 {
+		dto.PaymentForAccommodationDetails = vacancy.PaymentForAccommodationDetails.String
 	}
 	if vacancy.CompanyID != nil {
 		dto.CompanyName = vacancy.Company.Name
@@ -104,13 +113,16 @@ func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 
 func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 	dto := DetailsVacancyDTO{
-		Id:                      vacancy.ID,
-		Name:                    vacancy.Name,
-		CompanyID:               vacancy.CompanyID,
-		Format:                  vacancy.Format.Name,
-		DeadlineAt:              vacancy.DeadlineAt,
-		PaymentForAccommodation: vacancy.PaymentForAccommodation.Name,
-		FarePayment:             vacancy.FarePayment.Name,
+		Id:                        vacancy.ID,
+		Name:                      vacancy.Name,
+		CompanyID:                 vacancy.CompanyID,
+		FormatID:                  vacancy.FormatID,
+		Format:                    vacancy.Format.Name,
+		DeadlineAt:                vacancy.DeadlineAt,
+		PaymentForAccommodationID: vacancy.PaymentForAccommodationID,
+		PaymentForAccommodation:   vacancy.PaymentForAccommodation.Name,
+		FarePaymentID:             vacancy.FarePaymentID,
+		FarePayment:               vacancy.FarePayment.Name,
 		Description: DetailsDescriptionDTO{
 			Workplace:      vacancy.Description.Workplace.String,
 			Position:       vacancy.Description.Position.String,
@@ -131,7 +143,12 @@ func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 	} else {
 		dto.CompanyName = *vacancy.CompanyName
 	}
-
+	if dto.FarePaymentID == 3 {
+		dto.FarePaymentDetails = vacancy.FarePaymentDetails.String
+	}
+	if dto.PaymentForAccommodationID == 3 {
+		dto.PaymentForAccommodationDetails = vacancy.PaymentForAccommodationDetails.String
+	}
 	for _, course := range vacancy.Courses {
 		dto.Courses = append(dto.Courses, course.Name)
 	}
