@@ -34,7 +34,7 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 		if err != nil || vacancyId == 0 {
 			log.Info("invalid id")
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, utils.NewErrorResponse("id must be a valid positive integer"))
+			render.JSON(w, r, utils.NewErrorResponse("id must 1be a valid positive integer"))
 			return
 		}
 
