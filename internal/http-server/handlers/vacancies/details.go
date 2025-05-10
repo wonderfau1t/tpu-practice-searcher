@@ -103,7 +103,11 @@ func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 		dto.CompanyName = *vacancy.CompanyName
 	}
 	for _, course := range vacancy.Courses {
-		dto.Courses = append(dto.Courses, course.Name)
+		course := map[string]string{
+			"courseId": strconv.Itoa(int(course.ID)),
+			"name":     course.Name,
+		}
+		dto.Courses = append(dto.Courses, course)
 	}
 	for _, keyword := range vacancy.Keywords {
 		dto.Keywords = append(dto.Keywords, keyword.Keyword)
