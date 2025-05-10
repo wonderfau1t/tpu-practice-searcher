@@ -2,7 +2,7 @@ services:
   devbot:
     restart: always
     build:
-      context: tpu-practice-searcher-bot/
+      context: chatbot/
       dockerfile: Dockerfile
     image: tpu-practice-searcher-bot:latest
     container_name: dev-tpu-practice-searcher-bot-container
