@@ -22,11 +22,16 @@ type VacancyDescription struct {
 	AdditionalInfo string `json:"additionalInfo"`
 }
 
+type CoursesRequest struct {
+	CourseID uint   `json:"courseId"`
+	Name     string `json:"name"`
+}
+
 type UpdateVacancyRequest struct {
 	CompanyName                    string             `json:"companyName,omitempty"`
 	VacancyName                    string             `json:"vacancyName" validate:"required"`
 	FormatID                       uint               `json:"formatID" validate:"required"`
-	Courses                        []uint             `json:"courses" validate:"required"`
+	Courses                        []CoursesRequest   `json:"courses" validate:"required"`
 	Keywords                       []string           `json:"keywords"`
 	DeadlineAt                     string             `json:"deadlineAt" validate:"required"`
 	PaymentForAccommodationID      uint               `json:"paymentForAccommodationID" validate:"required"`
@@ -121,8 +126,8 @@ func updateVacancy(vacancy *db_models.Vacancy, req UpdateVacancyRequest) {
 
 	// Обновляем Courses (many-to-many)
 	vacancy.Courses = make([]db_models.Course, 0, len(req.Courses))
-	for _, courseID := range req.Courses {
-		vacancy.Courses = append(vacancy.Courses, db_models.Course{ID: courseID})
+	for _, course := range req.Courses {
+		vacancy.Courses = append(vacancy.Courses, db_models.Course{ID: course.CourseID})
 	}
 
 	// Обновляем Keywords (one-to-many)
