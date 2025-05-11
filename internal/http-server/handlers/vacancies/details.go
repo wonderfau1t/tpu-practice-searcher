@@ -108,9 +108,13 @@ func toVacancyDTO(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 		dto.PaymentForAccommodationDetails = vacancy.PaymentForAccommodationDetails.String
 	}
 	if vacancy.CompanyID != nil {
+		t := true
 		dto.CompanyName = vacancy.Company.Name
+		dto.HasCompanyProfile = &t
 	} else {
+		f := false
 		dto.CompanyName = *vacancy.CompanyName
+		dto.HasCompanyProfile = &f
 	}
 	for _, course := range vacancy.Courses {
 		courseLocal := map[string]string{

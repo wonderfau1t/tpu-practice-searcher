@@ -131,5 +131,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			return
 		}
 
+		render.Status(r, http.StatusCreated)
+		render.JSON(w, r, utils.NewSuccessResponse("success"))
 	}
 }

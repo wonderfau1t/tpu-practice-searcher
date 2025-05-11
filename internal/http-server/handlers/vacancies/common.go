@@ -22,6 +22,7 @@ type DetailsVacancyDTO struct {
 	Id                             uint                  `json:"id"`
 	IsCreatedByUser                *bool                 `json:"isCreatedByUser,omitempty"`
 	VacancyName                    string                `json:"vacancyName"`
+	HasCompanyProfile              *bool                 `json:"hasCompanyProfile,omitempty"`
 	IsReplied                      *bool                 `json:"isReplied,omitempty"`
 	CompanyID                      *uint                 `json:"companyID"`
 	CompanyName                    string                `json:"companyName"`
