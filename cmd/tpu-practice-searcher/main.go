@@ -100,6 +100,7 @@ func main() {
 		r.Route("/api/v1", func(r1 chi.Router) {
 			r1.Use(middlewares.AuthMiddleware)
 			r1.Get("/vacancies", vacancies.GetVacancies(log, db))
+			// TODO: флаг
 			r1.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
 			r1.Patch("/vacancies/{id}", hide.New(log, db))
 			r1.Get("/vacancies/filter", filter.New(log, db))

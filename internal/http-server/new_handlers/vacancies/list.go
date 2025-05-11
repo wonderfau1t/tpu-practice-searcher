@@ -17,10 +17,11 @@ type ListResponse struct {
 }
 
 type VacancyDTO struct {
-	ID             uint   `json:"id"`
-	Name           string `json:"name"`
-	CompanyName    string `json:"companyName,omitempty"`
-	CountOfReplies *int   `json:"countOfReplies,omitempty"`
+	ID              uint   `json:"id"`
+	Name            string `json:"name"`
+	CompanyName     string `json:"companyName,omitempty"`
+	CountOfReplies  *int   `json:"countOfReplies,omitempty"`
+	IsCreatedByUser *bool  `json:"isCreatedByUser,omitempty"`
 }
 
 type VacancyRepository interface {
@@ -45,10 +46,12 @@ func List(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 		var dtos []VacancyDTO
 		var err error
 		switch claims.Role {
-		case "student", "admin":
+		case "student":
 			dtos, err = getVacanciesForStudent(repo)
 		case "moderator":
 			dtos, err = getVacanciesForModerator(claims.UserID, repo)
+		case "admin":
+			dtos, err = getVacanciesForAdmin(claims.UserID, repo)
 		}
 
 		if err != nil {
@@ -120,6 +123,44 @@ func getVacanciesForModerator(moderatorID int64, repo VacancyRepository) ([]Vaca
 			Name:           vacancy.Name,
 			CompanyName:    companyName,
 			CountOfReplies: &vacancy.NumberOfResponses,
+		}
+		if vacancy.HrID == moderatorID {
+			t := true
+			dtos[i].IsCreatedByUser = &t
+		} else {
+			f := false
+			dtos[i].IsCreatedByUser = &f
+		}
+	}
+	return dtos, nil
+}
+
+func getVacanciesForAdmin(adminID int64, repo VacancyRepository) ([]VacancyDTO, error) {
+	vacancies, err := repo.GetAllVacancies()
+	if err != nil {
+		return nil, err
+	}
+
+	dtos := make([]VacancyDTO, len(vacancies))
+	for i, vacancy := range vacancies {
+		var companyName string
+		if vacancy.CompanyID == nil {
+			companyName = *vacancy.CompanyName
+		} else {
+			companyName = vacancy.Company.Name
+		}
+		dtos[i] = VacancyDTO{
+			ID:             vacancy.ID,
+			Name:           vacancy.Name,
+			CompanyName:    companyName,
+			CountOfReplies: &vacancy.NumberOfResponses,
+		}
+		if vacancy.HrID == adminID {
+			t := true
+			dtos[i].IsCreatedByUser = &t
+		} else {
+			f := false
+			dtos[i].IsCreatedByUser = &f
 		}
 	}
 	return dtos, nil

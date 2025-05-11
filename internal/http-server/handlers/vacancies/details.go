@@ -60,6 +60,8 @@ func GetVacancyDetails(log *slog.Logger, db DetailsStorage) http.HandlerFunc {
 			dto.IsReplied, _ = db.IsReplied(claims.UserID, uint(vacancyId))
 		case "headHR", "HR":
 			dto = toVacancyDTO(vacancy)
+			t := true
+			dto.IsCreatedByUser = &t
 		case "moderator", "admin":
 			dto = toVacancyDTOFull(vacancy)
 			t := new(bool)
