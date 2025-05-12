@@ -33,6 +33,7 @@ import (
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	companiesModule "tpu-practice-searcher/internal/http-server/new_handlers/companies"
 	"tpu-practice-searcher/internal/http-server/new_handlers/references"
+	repliesModule "tpu-practice-searcher/internal/http-server/new_handlers/replies"
 	vacanciesModule "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
@@ -67,22 +68,55 @@ func main() {
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
 
-		r.Get("/vacancies", vacanciesModule.List(log, db))
-		r.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
+		// Работа с вакансиями
+		r.Route("/vacancies", func(v chi.Router) {
+			v.Get("", vacanciesModule.List(log, db))
+			v.Post("", vacanciesModule.Create(log, db))
+			v.Get("/{id}", vacanciesModule.Details(log, db))
+			v.Put("/{id}", vacanciesModule.Update(log, db))
+			v.Delete("/{id}", vacanciesModule.Delete(log, db))
 
-		r.Put("/companies/update", companiesModule.Update(log, db))
-		r.Get("/companies/requests", companiesModule.ListRequests(log, db))
-		r.Get("/companies/requests/{id}", companiesModule.Details(log, db))
-		r.Patch("/companies/apply", companiesModule.Apply(log, db))
-		r.Patch("/companies/reject", companiesModule.Reject(log, db))
+			v.Get("/search", vacanciesModule.Search(log, db))
+			v.Get("/filter", vacanciesModule.Filter(log, db))
+
+			v.Post("/{id}/replies", repliesModule.MakeReply(log, db))
+			v.Delete("/{id}/replies", repliesModule.DeleteReply(log, db))
+		})
+
+		// Работа с компанией
+		r.Route("/companies", func(c chi.Router) {
+			c.Post("", companiesModule.Create(log, db))
+			// Для студента, модера, админа
+			c.Get("/{companyID}", companiesModule.Details(log, db))
+			c.Put("/{companyID}", companiesModule.Update(log, db))
+
+			c.Get("/requests", companiesModule.ListRequests(log, db))
+			c.Get("/requests/{companyID}", companiesModule.Details(log, db))
+			c.Patch("/requests/{companyID}/accept", companiesModule.Apply(log, db))
+			c.Patch("/requests/{companyID}/reject", companiesModule.Reject(log, db))
+
+			c.Get("/me", companiesModule.Details(log, db))
+			c.Put("/me", companiesModule.Update(log, db))
+			c.Get("/me/hrs", companiesModule.HrList(log, db))
+			c.Post("/me/hrs", companiesModule.CreateHr(log, db))
+		})
+
 	})
 
-	router.Get("/references/courses", references.Courses(log, db))
+	//router.Group(func(r chi.Router) {
+	//	r.Use(middlewares.AuthMiddleware)
+	//
+	//	r.Get("/vacancies", vacanciesModule.List(log, db))
+	//	r.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
+	//
+	//	r.Put("/companies/update", companiesModule.Update(log, db))
+	//	r.Get("/companies/requests", companiesModule.ListRequests(log, db))
+	//	r.Get("/companies/requests/{id}", companiesModule.Details(log, db))
+	//	r.Patch("/companies/apply", companiesModule.Apply(log, db))
+	//	r.Patch("/companies/reject", companiesModule.Reject(log, db))
+	//})
 
-	// Список вакансий
-	//router.Get("/vacancies", vacanciesModule.List(log, db))
-	//// Обновить информацию о вакансии
-	router.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
+	router.Get("/references/courses", references.Courses(log, db))
 
 	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {

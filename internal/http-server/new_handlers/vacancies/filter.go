@@ -1,4 +1,4 @@
-package filter
+package vacancies
 
 import (
 	"github.com/go-chi/render"
@@ -7,25 +7,14 @@ import (
 	"strconv"
 	"strings"
 	common "tpu-practice-searcher/internal/http-server/handlers/vacancies"
-	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 )
 
-type Response struct {
-	TotalCount int                    `json:"totalCount"`
-	Vacancies  []common.GetVacancyDTO `json:"vacancies"`
-}
-
-type Storage interface {
-	FilterVacancies(courseIDs []uint) ([]db_models.Vacancy, error)
-}
-
-func New(log *slog.Logger, db Storage) http.HandlerFunc {
+func Filter(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "handlers.filter.New"
+		const fn = "handlers.Search"
 		log := log.With(slog.String("fn", fn))
 
-		// Получаем course_ids из query-параметров
 		var courseIDs []uint
 		if courseIDsStr := r.URL.Query().Get("course_ids"); courseIDsStr != "" {
 			for _, idStr := range strings.Split(courseIDsStr, ",") {
@@ -39,7 +28,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			}
 		}
 
-		vacancies, err := db.FilterVacancies(courseIDs)
+		vacancies, err := repo.FilterVacancies(courseIDs)
 		if err != nil {
 			log.Error(err.Error())
 			render.Status(r, http.StatusInternalServerError)

@@ -12,16 +12,6 @@ import (
 	"tpu-practice-searcher/internal/utils"
 )
 
-type VacancyDescription struct {
-	Workplace      string `json:"workplace"`
-	Position       string `json:"position"`
-	Salary         string `json:"salary"`
-	Requirements   string `json:"requirements"`
-	Food           string `json:"food"`
-	Conditions     string `json:"conditions"`
-	AdditionalInfo string `json:"additionalInfo"`
-}
-
 type CoursesRequest struct {
 	CourseID uint   `json:"courseId"`
 	Name     string `json:"name"`
@@ -31,7 +21,7 @@ type UpdateVacancyRequest struct {
 	CompanyName                    string             `json:"companyName,omitempty"`
 	VacancyName                    string             `json:"vacancyName" validate:"required"`
 	FormatID                       uint               `json:"formatID" validate:"required"`
-	Courses                        []CoursesRequest   `json:"courses" validate:"required"`
+	Courses                        []uint             `json:"courses" validate:"required"`
 	Keywords                       []string           `json:"keywords"`
 	DeadlineAt                     string             `json:"deadlineAt" validate:"required"`
 	PaymentForAccommodationID      uint               `json:"paymentForAccommodationID" validate:"required"`
@@ -127,7 +117,7 @@ func updateVacancy(vacancy *db_models.Vacancy, req UpdateVacancyRequest) {
 	// Обновляем Courses (many-to-many)
 	vacancy.Courses = make([]db_models.Course, 0, len(req.Courses))
 	for _, course := range req.Courses {
-		vacancy.Courses = append(vacancy.Courses, db_models.Course{ID: course.CourseID})
+		vacancy.Courses = append(vacancy.Courses, db_models.Course{ID: course})
 	}
 
 	// Обновляем Keywords (one-to-many)

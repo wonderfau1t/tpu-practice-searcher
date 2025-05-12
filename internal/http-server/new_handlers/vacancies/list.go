@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/storage"
-	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
 )
 
@@ -22,12 +21,6 @@ type VacancyDTO struct {
 	CompanyName     string `json:"companyName,omitempty"`
 	CountOfReplies  *int   `json:"countOfReplies,omitempty"`
 	IsCreatedByUser *bool  `json:"isCreatedByUser,omitempty"`
-}
-
-type VacancyRepository interface {
-	GetAllVacancies() ([]db_models.Vacancy, error)
-	GetVacanciesByDepartmentID(departmentID uint) ([]db_models.Vacancy, error)
-	GetDepartmentByModeratorID(moderatorID int64) (uint, error)
 }
 
 func List(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {

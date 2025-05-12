@@ -1,33 +1,23 @@
-package get_all_hrs_of_company
+package companies
 
 import (
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
 	"tpu-practice-searcher/internal/http-server/middlewares"
-	"tpu-practice-searcher/internal/http-server/new_handlers/companies"
 	"tpu-practice-searcher/internal/utils"
 )
 
-type HRDTO struct {
-	Id               int64  `json:"id"`
-	Username         string `json:"username"`
-	CountOfVacancies int    `json:"countOfVacancies"`
+type response struct {
+	TotalCount int     `json:"totalCount"`
+	Hrs        []HRDTO `json:"hrs"`
 }
 
-type Response struct {
-	TotalCount int               `json:"totalCount"`
-	Hrs        []companies.HRDTO `json:"hrs"`
-}
-
-type Storage interface {
-	GetAllHrsOfCompany(companyID uint) ([]companies.HRDTO, error)
-}
-
-func New(log *slog.Logger, db Storage) http.HandlerFunc {
+func HrList(log *slog.Logger, db CompanyRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const fn = "handlers.get_all_hrs_of_company.New"
+		const fn = "handlers.HrList"
 		log := log.With(slog.String("fn", fn))
+
 		_ = log
 
 		claims, ok := middlewares.CtxClaims(r.Context())
@@ -44,7 +34,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			return
 		}
 
-		response := Response{
+		response := response{
 			TotalCount: len(hrs),
 			Hrs:        hrs,
 		}

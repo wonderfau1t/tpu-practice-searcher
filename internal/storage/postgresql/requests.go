@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"tpu-practice-searcher/internal/http-server/handlers/get_all_hrs_of_company"
+	"tpu-practice-searcher/internal/http-server/new_handlers/companies"
 	"tpu-practice-searcher/internal/storage"
 	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils/constants"
@@ -157,7 +157,7 @@ func (s *Storage) CreateNewCompany(userId int64, username string, companyName st
 	return nil
 }
 
-func (s *Storage) CreateNewVacancy(vacancy *db_models.Vacancy) error {
+func (s *Storage) CreateVacancy(vacancy *db_models.Vacancy) error {
 	if err := s.db.Create(vacancy).Error; err != nil {
 		return err
 	}
@@ -215,8 +215,8 @@ func (s *Storage) GetCompanyIDByHRID(hrID int64) (uint, error) {
 	return companyHr.CompanyID, nil
 }
 
-func (s *Storage) GetAllHrsOfCompany(companyID uint) ([]get_all_hrs_of_company.HRDTO, error) {
-	var response []get_all_hrs_of_company.HRDTO
+func (s *Storage) GetAllHrsOfCompany(companyID uint) ([]companies.HRDTO, error) {
+	var response []companies.HRDTO
 	var hrs []db_models.HrManager
 	if err := s.db.Preload("User").Where("company_id = ?", companyID).Find(&hrs).Error; err != nil {
 		return nil, err
@@ -228,7 +228,7 @@ func (s *Storage) GetAllHrsOfCompany(companyID uint) ([]get_all_hrs_of_company.H
 			return nil, err
 		}
 
-		response = append(response, get_all_hrs_of_company.HRDTO{
+		response = append(response, companies.HRDTO{
 			Id:               hr.UserID,
 			Username:         hr.User.Username,
 			CountOfVacancies: int(vacancyCount),
@@ -407,22 +407,25 @@ func (s *Storage) DeleteReply(studentID int64, vacancyID uint) error {
 	return err
 }
 
-func (s *Storage) FilterVacancies(categoryID *uint, courseIDs []uint) ([]db_models.Vacancy, error) {
+func (s *Storage) FilterVacancies(courseIDs []uint) ([]db_models.Vacancy, error) {
 	var vacancies []db_models.Vacancy
 	query := s.db.Model(&db_models.Vacancy{})
 
-	if categoryID != nil {
-		query = query.Where("category_id = ?", *categoryID)
-	}
+	//if categoryID != nil {
+	//	query = query.Where("category_id = ?", *categoryID)
+	//}
+	//
+	//if len(courseIDs) > 0 {
+	//	query = query.Joins("JOIN vacancy_courses vc ON vc.vacancy_id = vacancies.id").
+	//		Where("vc.course_id IN ?", courseIDs).
+	//		Group("vacancies.id")
+	//}
 
-	if len(courseIDs) > 0 {
-		query = query.Joins("JOIN vacancy_courses vc ON vc.vacancy_id = vacancies.id").
-			Where("vc.course_id IN ?", courseIDs).
-			Group("vacancies.id")
-	}
+	query = query.Joins("JOIN vacancy_courses vc ON vc.vacancy_id = vacancies.id").
+		Where("vc.course_id IN ?", courseIDs).
+		Group("vacancies.id")
 
-	if err := query.Preload("Category").
-		Preload("Company").
+	if err := query.Preload("Company").
 		Find(&vacancies).Error; err != nil {
 		return nil, err
 	}
@@ -451,8 +454,7 @@ func (s *Storage) SearchVacancies(searchQuery string) ([]db_models.Vacancy, erro
 		Where("vacancies.name ILIKE ? OR vk.keyword ILIKE ?", searchPattern, searchPattern).
 		Group("vacancies.id")
 
-	if err := query.Preload("Category").
-		Preload("Company").
+	if err := query.Preload("Company").
 		//Preload("Courses").
 		//Preload("Description").
 		//Preload("Keywords").
@@ -608,9 +610,11 @@ func (s *Storage) UpdateVacancy(vacancy *db_models.Vacancy) error {
 	for i := range vacancy.Keywords {
 		vacancy.Keywords[i].VacancyID = vacancy.ID
 	}
-	if err := tx.Create(&vacancy.Keywords).Error; err != nil {
-		tx.Rollback()
-		return err
+	if len(vacancy.Keywords) != 0 {
+		if err := tx.Create(&vacancy.Keywords).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	return tx.Commit().Error

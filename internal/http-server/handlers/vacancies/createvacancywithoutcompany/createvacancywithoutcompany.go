@@ -38,7 +38,7 @@ type Request struct {
 
 type Storage interface {
 	GetUserByID(userID int64) (*db_models.User, error)
-	CreateNewVacancy(vacancy *db_models.Vacancy) error
+	CreateVacancy(vacancy *db_models.Vacancy) error
 	GetCompanyByHrID(hrID int64) (*db_models.HrManager, error)
 }
 
@@ -124,7 +124,7 @@ func New(log *slog.Logger, db Storage) http.HandlerFunc {
 			vacancy.Courses = append(vacancy.Courses, db_models.Course{ID: courseID})
 		}
 
-		if err := db.CreateNewVacancy(&vacancy); err != nil {
+		if err := db.CreateVacancy(&vacancy); err != nil {
 			log.Error(err.Error())
 			render.Status(r, http.StatusInternalServerError)
 			render.JSON(w, r, utils.NewErrorResponse("Failed to add vacancy"))
