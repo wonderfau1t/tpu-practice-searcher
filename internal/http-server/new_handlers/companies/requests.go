@@ -17,7 +17,7 @@ type CompanyDTO struct {
 	Name         string `json:"name"`
 	Description  string `json:"description,omitempty"`
 	Link         string `json:"link,omitempty"`
-	RegisteredAt string `json:"registeredAt"`
+	RegisteredAt string `json:"registeredAt,omitempty"`
 	HRUsername   string `json:"HRUsername,omitempty"`
 }
 

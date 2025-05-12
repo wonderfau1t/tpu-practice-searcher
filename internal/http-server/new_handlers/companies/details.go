@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"tpu-practice-searcher/internal/http-server/middlewares"
 	"tpu-practice-searcher/internal/storage"
 	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
@@ -29,6 +30,32 @@ func Details(log *slog.Logger, db DetailsRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "handlers..Details"
 		log := log.With(slog.String("fn", fn))
+
+		claims, ok := middlewares.CtxClaims(r.Context())
+		if !ok {
+			render.Status(r, http.StatusUnauthorized)
+			render.JSON(w, r, utils.NewErrorResponse("Failed to parse claims"))
+			return
+		}
+
+		if claims.Role == "HR" || claims.Role == "headHR" {
+			company, err := db.GetCompanyInfo(claims.CompanyID)
+			if err != nil {
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+				return
+			}
+
+			dto := CompanyDTO{
+				Name:        company.Name,
+				Description: company.Description.String,
+				Link:        company.Link.String,
+			}
+
+			render.Status(r, http.StatusOK)
+			render.JSON(w, r, utils.NewSuccessResponse(dto))
+			return
+		}
 
 		companyID, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
 		if err != nil || companyID == 0 {
