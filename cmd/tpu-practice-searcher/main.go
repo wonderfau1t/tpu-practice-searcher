@@ -67,7 +67,7 @@ func main() {
 
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
-
+		r.Get("/auth", handlers.Auth(log, db))
 		// Работа с вакансиями
 		r.Route("/vacancies", func(v chi.Router) {
 			v.Get("/", vacanciesModule.List(log, db))
