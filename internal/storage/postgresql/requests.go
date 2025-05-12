@@ -423,6 +423,7 @@ func (s *Storage) FilterVacancies(courseIDs []uint) ([]db_models.Vacancy, error)
 
 	query = query.Joins("JOIN vacancy_courses vc ON vc.vacancy_id = vacancies.id").
 		Where("vc.course_id IN ?", courseIDs).
+		Where("vacancies.status_id = ?", 5).
 		Group("vacancies.id")
 
 	if err := query.Preload("Company").
@@ -452,6 +453,7 @@ func (s *Storage) SearchVacancies(searchQuery string) ([]db_models.Vacancy, erro
 	searchPattern := "%" + searchQuery + "%"
 	query = query.Joins("LEFT JOIN vacancy_keywords vk ON vk.vacancy_id = vacancies.id").
 		Where("vacancies.name ILIKE ? OR vk.keyword ILIKE ?", searchPattern, searchPattern).
+		Where("vacancies.status_id = ?", 5).
 		Group("vacancies.id")
 
 	if err := query.Preload("Company").

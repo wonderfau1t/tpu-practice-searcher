@@ -159,9 +159,13 @@ func toVacancyDTOFull(vacancy *db_models.Vacancy) DetailsVacancyDTO {
 		},
 	}
 	if vacancy.CompanyID != nil {
+		t := true
 		dto.CompanyName = vacancy.Company.Name
+		dto.HasCompanyProfile = &t
 	} else {
+		f := false
 		dto.CompanyName = *vacancy.CompanyName
+		dto.HasCompanyProfile = &f
 	}
 	if dto.FarePaymentID == 3 {
 		dto.FarePaymentDetails = vacancy.FarePaymentDetails.String
