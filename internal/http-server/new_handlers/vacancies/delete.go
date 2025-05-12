@@ -13,7 +13,7 @@ import (
 func Delete(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const fn = "handlers..Delete"
-		log := log.With(slog.String("fn", fn))
+		log := log.With(slog.String("fn1", fn))
 
 		claims, ok := middlewares.CtxClaims(r.Context())
 		if !ok {
