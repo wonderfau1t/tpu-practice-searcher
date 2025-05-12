@@ -32,7 +32,6 @@ import (
 	"tpu-practice-searcher/internal/http-server/handlers/vacancies/search"
 	"tpu-practice-searcher/internal/http-server/middlewares"
 	companiesModule "tpu-practice-searcher/internal/http-server/new_handlers/companies"
-	"tpu-practice-searcher/internal/http-server/new_handlers/references"
 	repliesModule "tpu-practice-searcher/internal/http-server/new_handlers/replies"
 	vacanciesModule "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
 	"tpu-practice-searcher/internal/logger"
@@ -123,7 +122,7 @@ func main() {
 	//	r.Patch("/companies/reject", companiesModule.Reject(log, db))
 	//})
 
-	router.Get("/references/courses", references.Courses(log, db))
+	//router.Get("/references/courses", references.Courses(log, db))
 
 	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {
