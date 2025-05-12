@@ -70,8 +70,8 @@ func main() {
 
 		// Работа с вакансиями
 		r.Route("/vacancies", func(v chi.Router) {
-			v.Get("", vacanciesModule.List(log, db))
-			v.Post("", vacanciesModule.Create(log, db))
+			v.Get("/", vacanciesModule.List(log, db))
+			v.Post("/", vacanciesModule.Create(log, db))
 			v.Get("/{id}", vacanciesModule.Details(log, db))
 			v.Put("/{id}", vacanciesModule.Update(log, db))
 			v.Delete("/{id}", vacanciesModule.Delete(log, db))
@@ -85,7 +85,7 @@ func main() {
 
 		// Работа с компанией
 		r.Route("/companies", func(c chi.Router) {
-			c.Post("", companiesModule.Create(log, db))
+			c.Post("/", companiesModule.Create(log, db))
 			// Для студента, модера, админа
 			c.Get("/{companyID}", companiesModule.Details(log, db))
 			c.Put("/{companyID}", companiesModule.Update(log, db))
