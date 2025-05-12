@@ -45,6 +45,8 @@ func List(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 			dtos, err = getVacanciesForModerator(claims.UserID, repo)
 		case "admin":
 			dtos, err = getVacanciesForAdmin(claims.UserID, repo)
+		case "HR", "headHR":
+			dtos, err = getVacanciesForHR(claims.CompanyID, repo)
 		}
 
 		if err != nil {
@@ -154,6 +156,31 @@ func getVacanciesForAdmin(adminID int64, repo VacancyRepository) ([]VacancyDTO, 
 		} else {
 			f := false
 			dtos[i].IsCreatedByUser = &f
+		}
+	}
+	return dtos, nil
+}
+
+func getVacanciesForHR(companyID uint, repo VacancyRepository) ([]VacancyDTO, error) {
+	vacancies, err := repo.GetAllVacanciesOfCompany(companyID)
+	if err != nil {
+		return nil, err
+	}
+	t := true
+	dtos := make([]VacancyDTO, len(vacancies))
+	for i, vacancy := range vacancies {
+		var companyName string
+		if vacancy.CompanyID == nil {
+			companyName = *vacancy.CompanyName
+		} else {
+			companyName = vacancy.Company.Name
+		}
+		dtos[i] = VacancyDTO{
+			ID:              vacancy.ID,
+			Name:            vacancy.Name,
+			CompanyName:     companyName,
+			CountOfReplies:  &vacancy.NumberOfResponses,
+			IsCreatedByUser: &t,
 		}
 	}
 	return dtos, nil

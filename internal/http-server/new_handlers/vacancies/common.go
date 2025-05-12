@@ -14,6 +14,7 @@ type VacancyRepository interface {
 	IsReplied(studentID int64, vacancyID uint) (*bool, error)
 	SearchVacancies(searchQuery string) ([]db_models.Vacancy, error)
 	FilterVacancies(courseIDs []uint) ([]db_models.Vacancy, error)
+	GetAllVacanciesOfCompany(companyID uint) ([]db_models.Vacancy, error)
 }
 
 type CreateVacancyRequest struct {
