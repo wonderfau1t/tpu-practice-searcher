@@ -81,12 +81,13 @@ func main() {
 			v.Get("/{id}", vacanciesModule.Details(log, db))
 			v.Put("/{id}", vacanciesModule.Update(log, db))
 			v.Delete("/{id}", vacanciesModule.Delete(log, db))
+			v.Get("/replies", get_replies.New(log, db))
 
 			v.Get("/search", vacanciesModule.Search(log, db))
 			v.Get("/filter", vacanciesModule.Filter(log, db))
 
-			v.Post("/{id}/replies", repliesModule.MakeReply(log, db))
-			v.Delete("/{id}/replies", repliesModule.DeleteReply(log, db))
+			v.Post("/{vacancyID}/replies", repliesModule.MakeReply(log, db))
+			v.Delete("/{vacancyID}/replies", repliesModule.DeleteReply(log, db))
 		})
 
 		// Работа с компанией
