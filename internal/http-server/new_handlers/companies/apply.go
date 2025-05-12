@@ -1,9 +1,11 @@
 package companies
 
 import (
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"tpu-practice-searcher/internal/utils"
 	"tpu-practice-searcher/internal/utils/constants"
 )
@@ -21,15 +23,15 @@ func Apply(log *slog.Logger, repo ApplyRepository) http.HandlerFunc {
 		const fn = "handlers.Apply"
 		log := log.With(slog.String("fn", fn))
 
-		var req ApplyCompanyRequest
-		if err := render.DecodeJSON(r.Body, &req); err != nil {
-			log.Error(err.Error())
+		companyID, err := strconv.ParseUint(chi.URLParam(r, "companyID"), 10, 64)
+		if err != nil || companyID == 0 {
+			log.Info("invalid id")
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, utils.NewErrorResponse("Failed to parse body"))
+			render.JSON(w, r, utils.NewErrorResponse("id must be a valid positive integer"))
 			return
 		}
 
-		err := repo.UpdateCompanyStatus(req.CompanyID, constants.StatusDefault)
+		err = repo.UpdateCompanyStatus(uint(companyID), constants.StatusDefault)
 		if err != nil {
 			log.Error(err.Error())
 			render.Status(r, http.StatusInternalServerError)

@@ -57,7 +57,7 @@ func Details(log *slog.Logger, db DetailsRepository) http.HandlerFunc {
 			return
 		}
 
-		companyID, err := strconv.ParseUint(chi.URLParam(r, "id"), 10, 64)
+		companyID, err := strconv.ParseUint(chi.URLParam(r, "companyID"), 10, 64)
 		if err != nil || companyID == 0 {
 			log.Info("invalid id")
 			render.Status(r, http.StatusBadRequest)

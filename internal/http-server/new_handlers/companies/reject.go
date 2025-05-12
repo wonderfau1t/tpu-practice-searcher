@@ -1,16 +1,17 @@
 package companies
 
 import (
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"tpu-practice-searcher/internal/utils"
 	"tpu-practice-searcher/internal/utils/constants"
 )
 
 type RejectCompanyRequest struct {
-	CompanyID uint   `json:"companyID"`
-	Message   string `json:"message"`
+	Message string `json:"message"`
 }
 
 type RejectRepository interface {
@@ -22,15 +23,23 @@ func Reject(log *slog.Logger, repo RejectRepository) http.HandlerFunc {
 		const fn = "handlers.Apply"
 		log := log.With(slog.String("fn", fn))
 
-		var req ApplyCompanyRequest
-		if err := render.DecodeJSON(r.Body, &req); err != nil {
-			log.Error(err.Error())
+		companyID, err := strconv.ParseUint(chi.URLParam(r, "companyID"), 10, 64)
+		if err != nil || companyID == 0 {
+			log.Info("invalid id")
 			render.Status(r, http.StatusBadRequest)
-			render.JSON(w, r, utils.NewErrorResponse("Failed to parse body"))
+			render.JSON(w, r, utils.NewErrorResponse("id must be a valid positive integer"))
 			return
 		}
 
-		err := repo.UpdateCompanyStatus(req.CompanyID, constants.StatusBlocked)
+		err = repo.UpdateCompanyStatus(uint(companyID), constants.StatusDefault)
+		if err != nil {
+			log.Error(err.Error())
+			render.Status(r, http.StatusInternalServerError)
+			render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+			return
+		}
+
+		err = repo.UpdateCompanyStatus(uint(companyID), constants.StatusBlocked)
 		if err != nil {
 			log.Error(err.Error())
 			render.Status(r, http.StatusInternalServerError)
