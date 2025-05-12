@@ -37,10 +37,16 @@ func Search(log *slog.Logger, repo VacancyRepository) http.HandlerFunc {
 
 		dtos := make([]common.GetVacancyDTO, len(vacancies))
 		for i, vacancy := range vacancies {
+			var companyName string
+			if vacancy.CompanyID == nil {
+				companyName = *vacancy.CompanyName
+			} else {
+				companyName = vacancy.Company.Name
+			}
 			dtos[i] = common.GetVacancyDTO{
 				ID:          vacancy.ID,
 				Name:        vacancy.Name,
-				CompanyName: vacancy.Company.Name,
+				CompanyName: companyName,
 			}
 		}
 
