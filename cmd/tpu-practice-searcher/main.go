@@ -69,6 +69,13 @@ func main() {
 		r.Use(middlewares.AuthMiddleware)
 		r.Get("/auth", handlers.Auth(log, db))
 		// Работа с вакансиями
+		r.Route("/references", func(r1 chi.Router) {
+			r1.Get("/formats", handlers.GetAllFormats(log, db))
+			r1.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
+			r1.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
+			r1.Get("/courses", references.Courses(log, db))
+		})
+
 		r.Route("/vacancies", func(v chi.Router) {
 			v.Get("/", vacanciesModule.List(log, db))
 			v.Post("/", vacanciesModule.Create(log, db))
