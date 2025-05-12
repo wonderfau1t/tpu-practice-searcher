@@ -18,7 +18,7 @@ type VacancyRepository interface {
 }
 
 type CreateVacancyRequest struct {
-	CompanyName                    string             `json:"companyName,omitempty" validate:"required"`
+	CompanyName                    string             `json:"companyName,omitempty"`
 	VacancyName                    string             `json:"vacancyName" validate:"required"`
 	FormatID                       uint               `json:"formatID" validate:"required"`
 	Courses                        []uint             `json:"courses" validate:"required"`
