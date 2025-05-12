@@ -172,7 +172,7 @@ func main() {
 			r1.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
 			r1.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
 			r1.Post("/company/createHr", create_new_hr.New(log, db))
-			r1.Get("/company/info", get_company_details.New(log, db))
+			r1.Get("/company/inf0", get_company_details.New(log, db))
 
 			r1.Post("/reply", reply_to_vacancy.New(log, db))
 			r1.Get("/replies", get_replies.New(log, db))
