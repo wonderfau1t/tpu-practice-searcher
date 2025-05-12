@@ -73,7 +73,7 @@ func main() {
 			r1.Get("/formats", handlers.GetAllFormats(log, db))
 			r1.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
 			r1.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
-			r1.Get("/courses", references.Courses(log, db))
+			r1.Get("/courses", handlers.GetAllCourses(log, db))
 		})
 
 		r.Route("/vacancies", func(v chi.Router) {
