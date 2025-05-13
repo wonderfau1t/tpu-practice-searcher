@@ -1,0 +1,26 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      JWT_SECRET_TOKEN: ${{ secrets.JWT_SECRET_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Stop and remove old container
+        run: docker-compose down
+
+      - name: Build and deploy with Docker Compose
+        run: docker-compose up -d --build
+
+      - name: Verify deployment
+        run: curl http://localhost:80
