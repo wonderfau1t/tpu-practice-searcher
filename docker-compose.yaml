@@ -23,7 +23,7 @@ services:
       - prod_net
     environment:
       JWT_SECRET_TOKEN: "JWT_SECRET_TOKEN"
-      TELEGRAM_BOT_TOKEN: "7675767595:AAE1xhwh82krR72WnINHFYPGCshT4ZfYKVU"
+      TELEGRAM_BOT_TOKEN: "7650435197:AAFWerS9j6ikk2MFlQ6raTgRFin2BL3FbQ0"
     ports:
       - "8000:8000"
     depends_on:
