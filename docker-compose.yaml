@@ -1,50 +1,50 @@
 services:
-  devbot:
+  bot:
     restart: always
     build:
       context: chatbot/
       dockerfile: Dockerfile
     image: tpu-practice-searcher-bot:latest
-    container_name: dev-tpu-practice-searcher-bot-container
+    container_name: tpu-practice-searcher-bot-container
     networks:
       - dev_net
     environment:
-      DATABASE_URL: "postgres://notdefaultuser:notdefaultuserpassword@devdb:5432/devdb"
+      DATABASE_URL: "postgres://notdefaultuser:notdefaultuserpassword@db:5432/db"
     depends_on:
-      - devdb
-  devbackend:
+      - db
+  backend:
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
     image: tpu-practice-searcher:latest
-    container_name: dev-tpu-practice-searcher-container
+    container_name: tpu-practice-searcher-container
     networks:
-      - dev_net
+      - prod_net
     environment:
       JWT_SECRET_TOKEN: "JWT_SECRET_TOKEN"
-      TELEGRAM_BOT_TOKEN: "7675767595:AAE1xhwh82krR72WnINHFYPGCshT4ZfYKVU"
+      TELEGRAM_BOT_TOKEN: "7650435197:AAFWerS9j6ikk2MFlQ6raTgRFin2BL3FbQ0"
     ports:
-      - "8001:8000"
+      - "8000:8000"
     depends_on:
-      - devdb
+      - db
     command: "./tpu-practice-searcher"
 
-  devdb:
+  db:
     image: postgres:16.0
-    container_name: dev-postgres-container
+    container_name: postgres-container
     networks:
-      - dev_net
+      - prod_net
     environment:
       - POSTGRES_USER=notdefaultuser
       - POSTGRES_PASSWORD=notdefaultuserpassword
-      - POSTGRES_DB=devdb
+      - POSTGRES_DB=db
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
-      - dev_postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     restart: always
 volumes:
-  dev_postgres_data:
+  postgres_data:
 networks:
-  dev_net:
+  prod_net:
