@@ -11,7 +11,7 @@ from aiogram import F
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 # Объект бота
-bot = Bot(token="7650435197:AAFWerS9j6ikk2MFlQ6raTgRFin2BL3FbQ0")
+bot = Bot(token="7675767595:AAE1xhwh82krR72WnINHFYPGCshT4ZfYKVU")
 DATABASE_URL = os.getenv("DATABASE_URL")
 # Диспетчер
 dp = Dispatcher()
