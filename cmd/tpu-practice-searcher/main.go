@@ -67,6 +67,7 @@ func main() {
 	router.Group(func(r chi.Router) {
 		r.Use(middlewares.AuthMiddleware)
 		r.Get("/auth", handlers.Auth(log, db))
+		r.Get("/register", handlers.RegisterStudent(log, db))
 		// Работа с вакансиями
 		r.Route("/references", func(r1 chi.Router) {
 			r1.Get("/formats", handlers.GetAllFormats(log, db))
