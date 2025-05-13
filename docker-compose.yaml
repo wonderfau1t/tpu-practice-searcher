@@ -7,7 +7,7 @@ services:
     image: tpu-practice-searcher-bot:latest
     container_name: tpu-practice-searcher-bot-container
     networks:
-      - dev_net
+      - prod_net
     environment:
       DATABASE_URL: "postgres://notdefaultuser:notdefaultuserpassword@db:5432/db"
     depends_on:
