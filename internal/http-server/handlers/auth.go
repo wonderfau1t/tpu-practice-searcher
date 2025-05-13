@@ -10,11 +10,12 @@ import (
 	"tpu-practice-searcher/internal/storage"
 	"tpu-practice-searcher/internal/storage/models/db_models"
 	"tpu-practice-searcher/internal/utils"
+	"tpu-practice-searcher/internal/utils/constants"
 )
 
 type AuthController interface {
 	//GetUserByID(userID int64) (*db_models.User, error)
-	GetCompanyIDByHRID(hrID int64) (uint, error)
+	GetCompanyIDByHRID(hrID int64) (uint, uint, error)
 	//IsRegisteredByUsername(username string) (bool, error)
 	//RegisterByUsername(hrID int64) error
 	FindOrRegisterByUsername(userID int64, username string) (*db_models.User, bool, error)
@@ -63,10 +64,15 @@ func Auth(log *slog.Logger, db AuthController) http.HandlerFunc {
 		case "moderator":
 			accessToken, err = utils.GenerateStudentAccessToken(user.ID, user.Username, user.Role.Name)
 		case "HR", "headHR":
-			companyID, err := db.GetCompanyIDByHRID(user.ID)
+			companyID, statusID, err := db.GetCompanyIDByHRID(user.ID)
 			if err != nil {
 				render.Status(r, http.StatusInternalServerError)
 				render.JSON(w, r, utils.NewErrorResponse("Internal server error"))
+				return
+			}
+			if statusID == constants.StatusUnderReview {
+				render.Status(r, http.StatusForbidden)
+				render.JSON(w, r, utils.NewErrorResponse("company is under review"))
 				return
 			}
 			accessToken, err = utils.GenerateHrAccessToken(user.ID, user.Username, companyID, user.Role.Name)

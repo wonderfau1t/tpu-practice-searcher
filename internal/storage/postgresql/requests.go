@@ -206,13 +206,13 @@ func (s *Storage) GetAllVacanciesOfCompany(companyID uint) ([]db_models.Vacancy,
 	return vacancies, nil
 }
 
-func (s *Storage) GetCompanyIDByHRID(hrID int64) (uint, error) {
+func (s *Storage) GetCompanyIDByHRID(hrID int64) (uint, uint, error) {
 
-	var companyHr db_models.HrManager
-	if err := s.db.First(&companyHr, "user_id = ?", hrID).Error; err != nil {
-		return 0, err
+	var company db_models.HrManager
+	if err := s.db.Preload("Company").First(&company, "user_id = ?", hrID).Error; err != nil {
+		return 0, 0, err
 	}
-	return companyHr.CompanyID, nil
+	return company.CompanyID, company.Company.StatusID, nil
 }
 
 func (s *Storage) GetAllHrsOfCompany(companyID uint) ([]companies.HRDTO, error) {
