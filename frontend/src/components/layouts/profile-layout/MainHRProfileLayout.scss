@@ -1,0 +1,24 @@
+.company-profile {
+  padding-top: 20px;
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  font-family: Roboto-SemiBold, sans-serif;
+  color: var(--color-green-500);
+
+  &__nav-tabs {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__content {
+    width: 90%;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 90px;
+  }
+}

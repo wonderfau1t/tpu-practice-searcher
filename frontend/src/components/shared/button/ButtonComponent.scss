@@ -1,0 +1,118 @@
+.button {
+  font-family: Roboto-SemiBold, sans-serif;
+  font-size: 17px;
+  border-radius: 8px;
+  border: transparent;
+  transition: all 0.1s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 210px;
+  flex-grow: 1;
+
+  &--default {
+    height: 50px;
+    color: var(--color-white);
+    background-color: var(--color-green-500);
+    &:hover {
+      background-color: var(--color-green-450);
+    }
+    &:active {
+      background-color: var(--color-green-400);
+    }
+  }
+
+  &--decline {
+    height: 50px;
+    font-family: Roboto-SemiBold, sans-serif;
+    width: 100%;
+    color: var(--color-red-text);
+    background: #F6F8FA;
+    border: 1px solid #D1D9E0;
+    &:hover {
+      background-color: var(--color-gray-hover);
+    }
+    &:active {
+      background-color: var(--color-gray-border);
+    }
+  }
+
+  &--outline {
+    height: 50px;
+    border: 1px solid var(--color-green-500);
+    background: var(--color-white);
+    color: var(--color-green-500);
+  }
+
+  &--filter {
+    height: 50px;
+    font-family: Roboto-SemiBold, sans-serif;
+    color: var(--color-gray-text);
+    background: #F6F8FA;
+    border: 1px solid #D1D9E0;
+    &:hover {
+      background-color: var(--color-gray-hover);
+    }
+    &:active {
+      background-color: var(--color-gray-border);
+    }
+  }
+
+  &--delete {
+    height: 50px;
+    width: 100%;
+    max-width: 100%;
+    background: var(--color-red-6);
+    color: var(--color-red-text);
+    border: 1px solid #D1D9E0;
+    &:hover {
+      background-color: var(--color-red-5);
+    }
+    &:active {
+      background-color: var(--color-red-4);
+    }
+  }
+
+  &--tags-add-button {
+    padding: 8px 0;
+    max-width: none;
+    color: var(--color-white);
+    background-color: var(--color-green-500);
+    &:hover {
+      background-color: var(--color-green-450);
+    }
+    &:active {
+      background-color: var(--color-green-400);
+    }
+  }
+
+  &--tags-remove-all-button {
+    padding: 8px 0;
+    max-width: none;
+    border: 1px solid var(--color-green-500);
+    background: var(--color-white);
+    color: var(--color-green-500);
+  }
+
+  &--x-mini-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: none;
+    width: auto;
+    padding: 3px;
+    border-radius: 50%;
+    background: var(--color-gray-border)
+  }
+
+  &--close-button {
+    height: 43px;
+    width: 43px;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 100;
+  }
+}

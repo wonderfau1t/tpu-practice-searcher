@@ -1,0 +1,75 @@
+.vacancy-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px 20px;
+  font-family: Roboto-Regular, sans-serif;
+  color: var(--color-green-950);
+  border: 1px solid var(--color-green-500);
+  background: var(--color-white);
+  border-radius: 8px;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+
+  &__who-create-label {
+    position: absolute;
+    top: 0;
+    right: 15px;
+    padding: 10px 2px 8px 2px;
+    display: flex;
+    background-color: var(--color-green-500);
+    border-radius: 0 0 5px 5px;
+
+    &__icon {
+      display: flex;
+    }
+  }
+
+  &__vacancy-name {
+    font-family: Roboto-Bold, sans-serif;
+    font-size: 20px;
+  }
+
+  &__course, &__category, &__responses {
+    font-size: 14px;
+    color: var(--color-gray-label);
+  }
+
+  &__course, &__category {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+
+    .course-label, .category-label {
+      color: var(--color-gray-text);
+    }
+
+    .course-text, .category-text {
+      color: var(--color-gray-text);
+    }
+  }
+
+  &__responses {
+    display: flex;
+    &__content {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
+      font-family: Roboto-Bold, sans-serif;
+      .text, .number {
+        font-size: 16px;
+        color: var(--color-green-500);
+      }
+    }
+  }
+
+  &:hover {
+    background-color: var(--color-green-50);
+  }
+}

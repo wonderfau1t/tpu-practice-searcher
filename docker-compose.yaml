@@ -1,4 +1,17 @@
 services:
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/src:ro
+      - ./frontend-build:/app/dist
+    command: >
+      sh -c "
+        cp -r /src/* . &&
+        npm ci &&
+        npm run build
+      "
+    restart: "no"
   bot:
     restart: always
     build:
@@ -9,21 +22,32 @@ services:
     networks:
       - prod_net
     environment:
-      DATABASE_URL: "postgres://notdefaultuser:notdefaultuserpassword@db:5432/db"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_NAME: "tpu_practice_searcher_db"
+      DB_USER: "not_default_user"
+      DB_PASSWORD: "not_default_user_password"
+      TELEGRAM_BOT_TOKEN: "7648731394:AAGswOBGquR84vBNF6oQxOhx6Ki2KHetxMA"
     depends_on:
       - db
+
   backend:
     restart: always
     build:
-      context: .
+      context: backend/
       dockerfile: Dockerfile
     image: tpu-practice-searcher:latest
     container_name: tpu-practice-searcher-container
     networks:
       - prod_net
     environment:
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_NAME: "tpu_practice_searcher_db"
+      DB_USER: "not_default_user"
+      DB_PASSWORD: "not_default_user_password"
+      TELEGRAM_BOT_TOKEN: "7648731394:AAGswOBGquR84vBNF6oQxOhx6Ki2KHetxMA"
       JWT_SECRET_TOKEN: "JWT_SECRET_TOKEN"
-      TELEGRAM_BOT_TOKEN: "7650435197:AAFWerS9j6ikk2MFlQ6raTgRFin2BL3FbQ0"
     ports:
       - "8000:8000"
     depends_on:
@@ -36,9 +60,9 @@ services:
     networks:
       - prod_net
     environment:
-      - POSTGRES_USER=notdefaultuser
-      - POSTGRES_PASSWORD=notdefaultuserpassword
-      - POSTGRES_DB=db
+      POSTGRES_USER: "not_default_user"
+      POSTGRES_PASSWORD: "not_default_user_password"
+      POSTGRES_DB: "tpu_practice_searcher_db"
     ports:
       - "5432:5432"
     volumes:

@@ -11,8 +11,14 @@ from aiogram import F
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 # Объект бота
-bot = Bot(token="7650435197:AAFWerS9j6ikk2MFlQ6raTgRFin2BL3FbQ0")
-DATABASE_URL = os.getenv("DATABASE_URL")
+bot = Bot(token=os.getenv("TELEGRAM_BOT_TOKEN"))
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_URL = f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
 # Диспетчер
 dp = Dispatcher()
 pool: asyncpg.Pool = None
@@ -20,11 +26,11 @@ pool: asyncpg.Pool = None
 
 async def init_db():
     global pool
-    pool = await asyncpg.create_pool(DATABASE_URL)
+    pool = await asyncpg.create_pool(DB_URL)
 
 
 async def update_phone_number(user_id: int, new_phone_number: str):
-    conn = await asyncpg.connect(DATABASE_URL)
+    conn = await asyncpg.connect(DB_URL)
     try:
         await conn.execute(
             "UPDATE users SET phone_number = $1 WHERE id = $2;",
@@ -42,8 +48,6 @@ async def cmd_start(message: types.Message):
         "Привет! Это сервис для поиска практики для студентов ТПУ\n"
         "Переходите в сервис по кнопке \"Запустить\""
     )
-    logger.info("Отреагировал на команту старт")
-
 
 @dp.message(F.contact)
 async def handle_contact(message: types.Message):

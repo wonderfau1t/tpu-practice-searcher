@@ -1,0 +1,17 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-layout-content {
+  flex: 1;
+  overflow: hidden; // ⛔️ не auto
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-menu {
+  height: 55px;
+}

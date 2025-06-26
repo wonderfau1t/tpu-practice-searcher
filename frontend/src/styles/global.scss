@@ -1,0 +1,9 @@
+@import 'variables';
+@import 'fonts';
+
+body {
+  background-color: var(--color-green-root-background);
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}

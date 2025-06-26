@@ -1,0 +1,23 @@
+.company-application-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px 20px;
+  font-family: Roboto-Regular, sans-serif;
+  color: var(--color-green-950);
+  border: 1px solid var(--color-green-500);
+  background: var(--color-white);
+  border-radius: 8px;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &__company-name {
+    font-family: Roboto-Bold, sans-serif;
+    font-size: 20px;
+  }
+
+  &:hover {
+    background-color: var(--color-green-50);
+  }
+}

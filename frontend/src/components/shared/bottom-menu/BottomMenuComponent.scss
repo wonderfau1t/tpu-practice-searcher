@@ -1,0 +1,71 @@
+.bottom-menu__wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 10px 5px 10px;
+  background: var(--color-white); /* Fallback color */
+  color: var(--color-gray);
+  font-family: Roboto-SemiBold, sans-serif;
+  border-top: 2px solid var(--color-green-200);
+  z-index: 3000;
+
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex: 1;
+    padding: 6px 0;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    color: var(--color-dark-gray);
+    svg {
+      transition: stroke 0.3s ease; /* Smooth icon color change */
+    }
+  }
+
+  .active {
+    color: var(--color-green-500);
+
+    svg {
+      stroke: var(--color-green-500);
+    }
+  }
+
+  //&::before {
+  //  content: "";
+  //  position: absolute;
+  //  top: 0;
+  //  left: 0;
+  //  height: 100%;
+  //  width: var(--highlight-width, 50%);
+  //  background: var(--color-green-500);
+  //  z-index: 1;
+  //  transition: transform 0.2s ease; /* Smooth movement */
+  //}
+  //@for $i from 0 through 5 { /* Поддержка до 6 вкладок */
+  //  &[data-active-tab="#{$i}"]::before {
+  //    transform: translateX($i * 100%);
+  //  }
+  //}
+  /* Move highlight based on data-active-tab */
+  //&[data-active-tab="0"]::before {
+  //  transform: translateX(0); /* First tab */
+  //}
+  //
+  //&[data-active-tab="1"]::before {
+  //  transform: translateX(100%); /* Second tab */
+  //}
+  //
+  //&[data-active-tab="2"]::before {
+  //  transform: translateX(200%); /* Third tab */
+  //}
+}

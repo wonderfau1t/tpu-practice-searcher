@@ -1,0 +1,57 @@
+.company-application {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-family: Roboto, sans-serif;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 15px 15px 15px 15px;
+
+
+  &__header {
+    font-size: 32px;
+    font-family: Roboto-SemiBold, sans-serif;
+    text-align: center;
+  }
+
+  &__company-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-green-500);
+
+    &__item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      &__label {
+        font-family: Roboto-SemiBold, sans-serif;
+        font-size: 18px;
+      }
+    }
+  }
+
+  &__approving-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  &__details {
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid var(--color-gray-border);
+    background: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
+  }
+}
