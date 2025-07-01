@@ -41,7 +41,7 @@ mkdir /var/www/tg-practice
 ```
 8. Копируем билд фронтенда в папку
 ```shell
-cp frontend-build/* /var/www/tg-practice -r
+cp frontend-build/* /var/www/tg-practice/ -r
 ```
 9. Настраиваем nginx для SPA-приложения
 ```text
