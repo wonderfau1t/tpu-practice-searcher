@@ -28,7 +28,7 @@ export const useCompanyStore = create<CompanyState>((set) => ({
 
     try {
       const response = await axios.post(
-        "https://api.tpupractice.ru/companies",
+        "/",
         {
           name: company.name,
           description: company.description,

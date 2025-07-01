@@ -29,6 +29,38 @@ cd tpu-practice-searcher
 sh ./script.sh
 ```
 
-5. Настраиваем docker-compose.yaml
+5. Настраиваем ``docker-compose.yaml``
 > Комментарии по настройке указаны внутри файла
-6. Билдим
+6. Билдим проект
+```shell
+docker compose up -d --build
+```
+7. Создаем папку, где будет храниться наше SPA-приложение (фронтенд)
+```shell
+mkdir /var/www/tg-practice
+```
+8. Копируем билд фронтенда в папку
+```shell
+cp frontend-build/* /var/www/tg-practice -r
+```
+9. Настраиваем nginx для SPA-приложения
+```text
+server {
+    listen 443 ssl;
+    server_name <ваш домен>;
+    # тут настроенный ssl-сертификат
+    
+    location / {
+        root /var/www/tg-practice;
+        try_files $uri /index.html;
+    }
+    
+    location /api/ {
+        proxy_pass http://localhost:8001/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
