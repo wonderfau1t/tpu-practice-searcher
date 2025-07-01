@@ -15,9 +15,9 @@ type Config struct {
 type Storage struct {
 	Host     string `env:"DB_HOST" env-required:"true"`
 	Port     int    `env:"DB_PORT" env-default:"5432"`
-	User     string `env:"DB_USER" env-required:"true"`
-	Password string `env:"DB_PASSWORD" env-required:"true"`
-	Dbname   string `env:"DB_NAME" env-required:"true"`
+	User     string `env:"POSTGRES_USER" env-required:"true"`
+	Password string `env:"POSTGRES_PASSWORD" env-required:"true"`
+	Dbname   string `env:"POSTGRES_DB" env-required:"true"`
 }
 
 func MustLoad() *Config {
