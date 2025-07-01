@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { tg } from "../lib/telegram.ts";
 
-export const API_URL = '';
+export const API_URL = '/api';
 const axiosInstance = axios.create({
   baseURL: API_URL,
 });
