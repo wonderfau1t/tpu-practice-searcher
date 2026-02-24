@@ -14,7 +14,5 @@ WORKDIR /app/
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/tpu-practice-searcher .
 
-ENV CONFIG_PATH=./config/config.yaml
+EXPOSE 8000
 CMD ["./tpu-practice-searcher"]
-
-

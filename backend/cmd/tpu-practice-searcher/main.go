@@ -1,10 +1,6 @@
 package main
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
-	"github.com/go-chi/render"
 	"net/http"
 	"os"
 	"tpu-practice-searcher/internal/config"
@@ -36,6 +32,11 @@ import (
 	vacanciesModule "tpu-practice-searcher/internal/http-server/new_handlers/vacancies"
 	"tpu-practice-searcher/internal/logger"
 	"tpu-practice-searcher/internal/storage/postgresql"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/go-chi/render"
 )
 
 func main() {
@@ -111,22 +112,6 @@ func main() {
 
 	})
 
-	//router.Group(func(r chi.Router) {
-	//	r.Use(middlewares.AuthMiddleware)
-	//
-	//	r.Get("/vacancies", vacanciesModule.List(log, db))
-	//	r.Put("/vacancies/{id}", vacanciesModule.Update(log, db))
-	//
-	//	r.Put("/companies/update", companiesModule.Update(log, db))
-	//	r.Get("/companies/requests", companiesModule.ListRequests(log, db))
-	//	r.Get("/companies/requests/{id}", companiesModule.Details(log, db))
-	//	r.Patch("/companies/apply", companiesModule.Apply(log, db))
-	//	r.Patch("/companies/reject", companiesModule.Reject(log, db))
-	//})
-
-	//router.Get("/references/courses", references.Courses(log, db))
-
-	//router.Patch("/company", handlers.)
 	router.Route("/backend", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			render.JSON(w, r, map[string]string{"message": "Hello world!"})
@@ -184,55 +169,6 @@ func main() {
 			r1.Post("/createVacancyWithoutCompany", createvacancywithoutcompany.New(log, db))
 		})
 	})
-	// Справочная информация
-	//router.Route("/search", func(r chi.Router) {
-	//	r.Get("/categories", handlers.GetAllCategories(log, db))
-	//	r.Get("/formats", handlers.GetAllFormats(log, db))
-	//	r.Get("/farePaymentMethods", handlers.GetAllFarePaymentMethods(log, db))
-	//	r.Get("/accommodationPaymentMethods", handlers.GetAllAccommodationPaymentMethods(log, db))
-	//	r.Get("/courses", handlers.GetAllCourses(log, db))
-	//})
-
-	// Финальные эндпоинты
-	//router.Route("/api/v1", func(r chi.Router) {
-	//	r.Use(middlewares.AuthMiddleware)
-	//	r.Get("/vacancies", vacancies.GetVacancies(log, db))
-	//	r.Get("/vacancies/{id}", vacancies.GetVacancyDetails(log, db))
-	//	r.Get("/vacancies/filter", filter.New(log, db))
-	//	r.Get("/vacancies/search", search.New(log, db))
-	//
-	//	r.Post("/vacancies/{vacancyID}/replies", makereply.New(log, db))
-	//	r.Delete("/vacancies/{vacancyID}/replies", deletereply.New(log, db))
-	//
-	//	r.Get("/companies/{id}", companies.New(log, db))
-	//
-	//})
-	// Вакансии
-	//router.Get("/vacancies", get_vacancies.New(log, db))
-	//// Подробная информация о вакансии
-	//router.Get("/vacancies/{id}", get_vacancy_details.New(log, db))
-	//// Вакансии определенной компании
-	//router.Get("/companies/{id}/vacancies", get_vacancies_of_company.New(log, db))
-	//// Профиль компании
-	//router.Get("/companies/{id}/info", get_company_info.New(log, db))
-	////
-	//router.Group(func(r chi.Router) {
-	//	r.Use(middlewares.AuthMiddleware)
-	//	r.Get("/auth", handlers.Auth(log, db))
-	//	r.Get("/register", handlers.RegisterStudent(log, db))
-	//	r.Post("/registerCompany", handlers.RegisterCompany(log, db))
-	//	r.Post("/addVacancy", handlers.AddVacancy(log, db))
-	//	r.Get("/company/vacancies", get_all_vacancies_of_company.New(log, db))
-	//	r.Get("/company/hrs", get_all_hrs_of_company.New(log, db))
-	//	r.Post("/company/createHr", create_new_hr.New(log, db))
-	//	r.Get("/company/info", get_company_details.New(log, db))
-	//
-	//	r.Post("/reply", reply_to_vacancy.New(log, db))
-	//	r.Get("/replies", get_replies.New(log, db))
-	//
-	//	r.Get("/school/vacancies", get_all_vacancies_by_courses.New(log, db))
-	//	r.Get("/moderator/vacancies/{id}", get_vacancy_info.New(log, db))
-	//})
 
 	http.ListenAndServe("0.0.0.0:8000", router)
 }

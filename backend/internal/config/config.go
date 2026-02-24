@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	Env              string `env:"environment" env-default:"local"`
+	Env              string `env:"ENVIRONMENT" env-default:"local"`
 	AccessSecret     string `env:"JWT_SECRET_TOKEN" env-required:"true"`
 	TelegramBotToken string `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
 	Storage
